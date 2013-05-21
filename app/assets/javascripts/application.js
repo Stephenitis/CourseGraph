@@ -14,3 +14,5 @@
 //= require jquery_ujs
 //= require jit.js
 //= require example1.js
+//= require twitter/bootstrap
+//= require_tree .
