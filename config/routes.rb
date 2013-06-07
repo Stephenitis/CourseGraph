@@ -3,7 +3,7 @@ Coursetree::Application.routes.draw do
 
   get "home/show"
 
-  get "home/tree/:id" => "home#tree"
+  get "/tree/:id" => "home#tree"
 
   root :to => 'home#index'
   # The priority is based upon order of creation:
