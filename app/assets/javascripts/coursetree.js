@@ -45,6 +45,7 @@ function init(){
         offsetY: 280,
         orientation: "top",
         subtreeOffset: -200,
+        siblingOffset:10,
         //enable panning
         Navigation: {
           enable: true,
