@@ -8,6 +8,8 @@ I graduated a semester late instead of a year early, this is me scratching my ow
 
 @Stephenitis
 
+This project is currently being ported over to rails
+
 A current student at Dev Bootcamp San Fransisco, California.
 http://binaryskipper.tumblr.com
 nguyenhstephen@gmail.com
