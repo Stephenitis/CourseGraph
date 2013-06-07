@@ -7,9 +7,10 @@
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
 </head>
-<body>
-
+<nav>
+  <span> Course Tree </span>
+</nav>
+<body onload="init();">
 <%= yield %>
-<%= link_to home_index_path %>
 </body>
 </html>

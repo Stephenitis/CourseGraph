@@ -1,18 +1,16 @@
-
-  <%= javascript_tag do %>
-  var courseTree = <%= raw(@tree.to_json) %>
+<%= javascript_tag do %>
+var courseTree = <%= raw(@tree.to_json) %>
 <% end %>
 
-<body onload="init();">
-<div id="container"
+
+<div id="container">
 
   <div id="center-container">
-
-    <div id="infovis"></div>    
+    <div id="infovis"></div>
   </div>
 
   <div id="right-container">
-
+    <div id="log"></div>
     <h4>Course Tree Orientation</h4>
     <table>
       <tr>
@@ -42,14 +40,15 @@
   <tr>
     <td>
       <label for="r-right">Right </label>
-    </td> 
-    <td> 
+    </td>
+    <td>
      <input type="radio" id="r-right" name="orientation" value="right" />
    </td>
  </tr>
 </table>
 
 <h4>Selection Mode</h4>
+
 <table>
   <tr>
     <td>
@@ -69,7 +68,4 @@
 </tr>
 </table>
 </div>
-<!-- </div> -->
 </div>
-</body>
-</html>
