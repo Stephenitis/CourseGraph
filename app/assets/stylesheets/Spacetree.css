@@ -102,7 +102,7 @@ nav{
 nav li {
   list-style: none;
   float:left;
-  padding: 0 0 10px 0; 
+  padding: 0 0 10px 0;
   padding-right: 7px;
 }
 nav ul{
@@ -134,14 +134,14 @@ nav a {
   color: #84D200;
 
 }
+
 #container {
   background-color: white;
   margin: 120px auto;
   border:1px solid black;
   padding:50px;
-  width: 80%;
+  width: 100%;
   height: 100%;
-  /*background-color:red;*/
   padding: 10px 20px 20px 20px;
   box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);
   -moz-box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);
@@ -158,30 +158,16 @@ nav a {
 #index table td{
   border-bottom: thin solid black;
 }
-#infovis {
-  width:70%;
-  height:1000px;
-  background-color:#1a1a1a;
-  border:3px solid white;
-  box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);
-  -moz-box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);
-  -webkit-box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);;
-}
+
 
 #right-container {
-  width:15%;
+  float:right;
+  width:25%;
   color:#686c70;
-  float:right;
-  text-align: left;
-  overflow: auto;
   margin: 0px auto;
-  padding-top:0px;
-  float:right;
+  text-align: left;
   background-color:#fff;
-  background-repeat:no-repeat;
   border-bottom:1px solid #ddd;
-  background-image:url('col1.png');
-  background-position:center left;
   border-right:1px solid #ddd;
   box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);
   -moz-box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);
@@ -189,13 +175,24 @@ nav a {
 }
 
 #center-container {
-  width:50%;
-  margin:70px auto;
   float:left;
+  width:70%;
+  height:800px;
+  bottom:0;
   color:#ccc;
   box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);
   -moz-box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);
   -webkit-box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);
+}
+
+#infovis {
+  width:100%;
+  height:100%;
+  background-color:#1a1a1a;
+  border:3px solid white;
+  box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);
+  -moz-box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);
+  -webkit-box-shadow: inset 0 2px #fff, 0 2px 3px rgba(34,25,25,0.4);;
 }
 
 .text {

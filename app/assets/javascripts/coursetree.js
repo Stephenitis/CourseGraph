@@ -5,7 +5,7 @@ var labelType, useGradients, nativeTextSupport, animate;
   iStuff = ua.match(/iPhone/i) || ua.match(/iPad/i),
   typeOfCanvas = typeof HTMLCanvasElement,
   nativeCanvasSupport = (typeOfCanvas == 'object' || typeOfCanvas == 'function'),
-  textSupport = nativeCanvasSupport 
+  textSupport = nativeCanvasSupport
   && (typeof document.createElement('canvas').getContext('2d').fillText == 'function');
   //I'm setting this based on the fact that ExCanvas provides text support for IE
   //and that as of today iPhone/iPad current text support is lame
@@ -18,7 +18,7 @@ var labelType, useGradients, nativeTextSupport, animate;
 var Log = {
   elem: false,
   write: function(text){
-    if (!this.elem) 
+    if (!this.elem)
       this.elem = document.getElementById('log');
   this.elem.innerHTML = text;
   this.elem.style.left = (500 - this.elem.offsetWidth / 2) + 'px';
@@ -43,8 +43,8 @@ function init(){
         levelDistance: 80,
         offsetX: 0,
         offsetY: 280,
-        orientation: "top", 
-        subtreeOffset: -200, 
+        orientation: "top",
+        subtreeOffset: -200,
         //enable panning
         Navigation: {
           enable: true,
@@ -64,25 +64,25 @@ function init(){
             align: "center",
             orientation: 'left'
         },
-        
+
         Edge: {
             type: 'arrow',
             overridable: false
         },
-        
+
         onBeforeCompute: function(node){
             Log.write("loading " + node.name);
         },
-        
+
         onAfterCompute: function(){
             Log.write("done");
         },
-        
+
         //This method is called on DOM label creation.
         //Use this method to add event handlers and styles to
         //your node.
         onCreateLabel: function(label, node){
-            label.id = node.id;            
+            label.id = node.id;
             label.innerHTML = node.name;
             label.onclick = function(){
             	if(normal.checked) {
@@ -94,7 +94,7 @@ function init(){
             //set label styles
             var style = label.style;
             style.width = 55 + 'px';
-            style.height = 55 + 'px';            
+            style.height = 55 + 'px';
             style.cursor = 'pointer';
             style.color = '#333';
             style.fontWeight = "bold";
@@ -103,7 +103,7 @@ function init(){
             style.paddingTop = '3px';
             style.paddingLeft = '3px';
         },
-        
+
         //This method is called right before plotting
         //a node. It's useful for changing an individual node
         //style properties before plotting it.
@@ -124,11 +124,11 @@ function init(){
                     node.eachSubnode(function(n) { count++; });
                     //assign a node color based on
                     //how many children it has
-                    node.data.$color = ['#8cf', '#9cf', '#acf', '#bcf', '#ccf', '#dcf'][count];                    
+                    node.data.$color = ['#8cf', '#9cf', '#acf', '#bcf', '#ccf', '#dcf'][count];
                 }
             }
         },
-        
+
         //This method is called right before plotting
         //an edge. It's useful for changing an individual edge
         //style properties before plotting it.
@@ -153,13 +153,13 @@ function init(){
     st.onClick(st.root);
     //end
     //Add event handlers to switch spacetree orientation.
-    var top = $jit.id('r-top'), 
-    left = $jit.id('r-left'), 
-    bottom = $jit.id('r-bottom'), 
+    var top = $jit.id('r-top'),
+    left = $jit.id('r-left'),
+    bottom = $jit.id('r-bottom'),
     right = $jit.id('r-right'),
     normal = $jit.id('s-normal');
 
-    
+
     function changeHandler() {
         if(this.checked) {
             top.disabled = bottom.disabled = right.disabled = left.disabled = true;
@@ -170,7 +170,7 @@ function init(){
             });
         }
     };
-    
+
     top.onchange = left.onchange = bottom.onchange = right.onchange = changeHandler;
     //end
 
