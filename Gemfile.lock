@@ -99,6 +99,8 @@ GEM
       hpricot (~> 0.8.6)
       ruby_parser (~> 3.1.1)
     i18n (0.6.1)
+    jit-rails (0.0.2)
+      railties (>= 3.1.0, < 5.0)
     journey (1.0.4)
     jquery-rails (2.2.1)
       railties (>= 3.0, < 5.0)
@@ -232,6 +234,7 @@ DEPENDENCIES
   guard-rspec
   haml-rails
   html2haml (>= 1.0.1)
+  jit-rails
   jquery-rails
   letter_opener
   pg
