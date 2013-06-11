@@ -5,8 +5,9 @@ module Api
 
       respond_to :html, :json, :xml
 
+#http://localhost:3000/api/v1/trees?access_token=9f443643180d96624e96b8be4b7af29a&page=3&limit=50
       def index
-        @courses = Course.all
+        @courses = Course.paginate(:page => params[:page], :per_page => params[:limit]).order('id DESC')
         respond_with @courses
       end
 

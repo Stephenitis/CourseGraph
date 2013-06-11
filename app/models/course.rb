@@ -6,6 +6,7 @@ class Course < ActiveRecord::Base
   # scope :prerequisites, where(:)
   attr_accessible  :SEC, :INSTRUCTORS, :CRN, :MIN_CRED, :MAX_CRED, :DAYS, :TIME, :RM_CAP, :ENRL, :GLOB_CAP, :LOC_CAP, :AVAIL, :STAT, :FIRECAP, :CAMPUS, :COLLEGE, :LEVEL, :COREQS, :RESTRICTIONS, :PREREQS, :COMMENTS, :SUBJ, :CRS, :TITLE, :COMMENTS
 
+  self.per_page = 10
 
   def to_node
     { "id" => self.id,
