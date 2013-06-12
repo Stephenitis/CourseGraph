@@ -1,11 +1,24 @@
 Coursetree::Application.routes.draw do
-  get "home/index"
 
-  get "home/show"
+  namespace :api do
+    namespace :v1, :defaults => {:format => "json"} do
+      resources :trees
+      # get "home/tree/:id" => "home#tree"
+      # get "/tree/:id" => "api/v1/home#tree"
+      # get "/course/index" => "api/v1/home#index"
+    end
+  end
 
-  get "/tree/:id" => "home#tree"
 
-  root :to => 'home#index'
+  # get "home/index"
+
+  # get "course/show/:id" => "home#show"
+  # get "/d3test" => "home#d3test"
+  # get "/d3test2" => "home#d3test2"
+
+
+  root :to => 'api/v1/trees#index'
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
