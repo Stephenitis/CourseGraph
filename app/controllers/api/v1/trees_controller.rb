@@ -8,7 +8,14 @@ module Api
 #http://localhost:3000/api/v1/trees?access_token=9f443643180d96624e96b8be4b7af29a&page=3&limit=50
       def index
         @courses = Course.paginate(:page => params[:page], :per_page => params[:limit]).order('id DESC')
-        respond_with @courses
+
+        @hash =  {:current_page => @courses.current_page,
+                  :per_page => @courses.per_page,
+                  :total_entries => @courses.total_entries,
+                  :entries => @courses.count}
+
+        @response =  {paging: @hash, courses: @courses}.to_json
+        respond_with @response
       end
 
       def show
