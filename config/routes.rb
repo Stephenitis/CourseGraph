@@ -9,6 +9,8 @@ Coursetree::Application.routes.draw do
     end
   end
 
+  get "/d3test" =>'home#d3test'
+  get "/d3test2" =>'home#d3test2'
 
   # get "home/index"
 
