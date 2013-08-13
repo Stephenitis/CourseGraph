@@ -76,6 +76,7 @@ CSV.foreach("campus1.csv", :headers => true) do |row|
   course = course_to_db[row["SUBJ"] + ' ' + row["CRS"]]
   row["PREREQS"].scan(/[A-Z]{2,4} ?\d{3}[LS]?/).each do |req|
     req_course = course_to_db[req]
+    p req
     if req_course
       Relationship.create(course_id: course.id, requisite_id: req_course.id)
     else
