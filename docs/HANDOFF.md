@@ -6,7 +6,7 @@ CourseGraph is Stephen Nguyen's visual academic-path prototype, inspired by Diab
 
 - **Live:** [coursegraph.my](https://coursegraph.my/)
 - **Repository:** [Stephenitis/CourseGraph, master](https://github.com/Stephenitis/CourseGraph/tree/master)
-- **App release:** [PR #3](https://github.com/Stephenitis/CourseGraph/pull/3), merged to master as `709ebf0`. App source head was `f6a697dea0fbac17e13bb20b5f55aead2286032a`.
+- **App release:** [PR #5](https://github.com/Stephenitis/CourseGraph/pull/5), merged to master as `7d85932`. App source head was `b9d28ade0ca682b7d95f8ea4a5fbf93334869b67`.
 - **Runnable source:** `web/`. The original Rails app remains for history and is not required.
 - **Local checkout:** `/Users/eeveehome/Documents/ChatGPT/CourseGraph`.
 - **Next work:** [TODO.md](TODO.md). Media production is explicitly deferred at Stephen's request.
@@ -73,7 +73,7 @@ Original release verification: **135 TypeScript tests and 5 Python importer test
 
 Production is an existing public **Sites** project, `appgprj_6adb849892d08191bf9dc2fcfb1fa83d`. Its config is `web/.openai/hosting.json`; output is `web/dist`. The secondary address is [coursegraph-paths.rlze.chatgpt.site](https://coursegraph-paths.rlze.chatgpt.site). Namecheap DNS and TLS are active. Vercel is compatible but not the current host; no Vercel project was created by this chat.
 
-Latest publication: Sites version **3**, source commit `b20fc32d96e2afd0502015a3f6050449b6f5bc37`, version ID `appgprj_6adb849892d08191bf9dc2fcfb1fa83d~appgver_f608573b1be4819197b737be7d4c18fc`, deployment `appgdep_6adbc235fd58819193efca6648d27da6`. It succeeded October 23, 2026 at 20:23:26 UTC. The custom-domain HTML was verified to load `index-plE_p7h3.js` and `index-BzJ0wVyw.css`, matching the latest build.
+Latest publication: Sites version **4**, source commit `3f10b1f76ea3133e88a5bbda67e5148785f65d5f`, version ID `appgprj_6adb849892d08191bf9dc2fcfb1fa83d~appgver_b3eff196c8e4819189227156d68f0cee`, deployment `appgdep_6adbc45515c88191a6ed1ace22d33084`. It succeeded October 23, 2026 at 20:32:28 UTC. The custom-domain HTML was verified to load `index-DK-S8VrF.js` and `index-BzJ0wVyw.css`, matching the latest build.
 
 For a future app release, read the installed Sites skill and use the existing project and public audience. Build `web/`, synchronize it into the ignored `.site-stage/` checkout (exclude `.git`, `node_modules`, `.env*` and build metadata), then use the Sites source-package helper, save a version, deploy that exact version and verify the public asset references. Pass fresh short-lived credentials through hidden stdin only. See [DEPLOYMENT.md](DEPLOYMENT.md). GitHub merge alone does **not** deploy Sites.
 
