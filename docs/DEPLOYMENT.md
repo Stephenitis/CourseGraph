@@ -25,4 +25,17 @@ Verification completed: custom-domain status, provider status, and TLS status ar
 
 ## Alternative static deployment
 
-For a Vercel project, use repository `Stephenitis/CourseGraph`, branch `prototype/coursegraph`, root directory `web`, build command `npm run build`, and output directory `dist`. This repository is compatible with that configuration; no Vercel project was created by this build chat. The existing public deployment uses Sites.
+For a Vercel project, use repository `Stephenitis/CourseGraph`, branch `master`, root directory `web`, build command `npm run build`, and output directory `dist`. This repository is compatible with that configuration; no Vercel project was created by this build chat. The existing public deployment uses Sites.
+
+## Latest release and future workflow
+
+The latest app was merged through [PR #1](https://github.com/Stephenitis/CourseGraph/pull/1) into `master` at `2babc38e75bd14932524b4de9170f337e4569078` (app source head `fda36cd5e77a547934e3e6243ef214627d1ed4e8`). Sites version **2** deployed successfully on October 23, 2026 at 19:30:21 UTC:
+
+- Source commit: `a549d4a8312aa78b9d9aa2352ac740476cbb1a9e`
+- Version: `appgprj_6adb849892d08191bf9dc2fcfb1fa83d~appgver_f135bd9700a8819184cca78fafb2b111`
+- Deployment: `appgdep_6adbb5c0e848819191ecb944b756a94d`
+- Verified public entry assets: `index-CNf6gpzX.js` and `index-5UVpx71W.css`
+
+Stephen’s standing instruction is **test → build → push → merge to master → deploy**. GitHub and Sites remain separate steps; no automatic GitHub-to-Sites deployment pipeline is installed. Documentation-only updates do not require an unchanged app deployment. Use [HANDOFF.md](HANDOFF.md) and the installed Sites skill for the release process, and preserve the current public audience and project.
+
+Both GitHub and Sites source uploads initially encountered Git RPC HTTP 400. Setting repository-local `http.postBuffer` to `524288000` and `http.version` to `HTTP/1.1` resolved the observed errors. Do not treat a transport error as a successful upload; verify the remote commit and deployed assets.
