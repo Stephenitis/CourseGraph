@@ -1,6 +1,6 @@
 export interface FocusRect { x:number; y:number; width:number; height:number }
 export interface FocusOptions { currentZoom?:number; preferredZoom?:number; obstacles?:FocusRect[] }
-export const DEFAULT_MAP_ZOOM=.75;
+export const DEFAULT_MAP_ZOOM=.575;
 
 /** Keep the full graph readable at the furthest zoom and reachable within a bounded canvas. */
 export function getGraphViewportLimits(bounds:FocusRect,viewport:{width:number;height:number}){

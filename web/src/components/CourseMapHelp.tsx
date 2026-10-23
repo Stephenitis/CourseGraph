@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import { ArrowUpRight, X } from 'lucide-react';
 import './CourseMapHelp.css';
 
 export function CourseMapHelp(){
@@ -7,7 +7,7 @@ export function CourseMapHelp(){
   const [height,setHeight]=useState(240);
   const close=()=>{if(details.current){details.current.open=false;details.current.querySelector('summary')?.focus({preventScroll:true});}};
   return <details ref={details} className="map-help" onToggle={e=>{if(e.currentTarget.open)setHeight(Math.max(110,(e.currentTarget.closest('.map-canvas')?.clientHeight??300)-54));}} onKeyDown={e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close();}}}>
-    <summary>Course numbers &amp; labels</summary>
+    <summary>Course numbers &amp; labels<ArrowUpRight size={16} aria-hidden="true"/></summary>
     <div className="map-help-content" style={{maxHeight:height}} role="region" aria-label="MIT course numbers and labels">
       <button className="map-help-close" onClick={close} aria-label="Close course numbers guide"><X size={14}/></button>
       <h3>Reading the map</h3>
