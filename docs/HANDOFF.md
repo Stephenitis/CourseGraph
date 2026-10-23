@@ -19,7 +19,7 @@ The React 19 / TypeScript / Vite app uses React Flow with custom layout, routing
 
 Requirement evaluation handles nested AND/OR, course counts, unit counts, earlier-term prerequisites, same-term corequisites and manual review. A downstream highlight means a contribution toward a requirement, not guaranteed eligibility. Semester planning includes loads and optional capacity comparisons based on an advisor-confirmed remaining-unit balance.
 
-Clicking an available graph card adds it to the active plan and term. Clicking a planned card or its checked circle removes it. If removal would invalidate previously supported planned courses, a confirmation lists the affected courses and terms. Valid alternatives are preserved, existing invalid courses are not swept into the cascade, completed history stays intact, and Undo restores the action. Locked cards inspect requirements without adding. Course-list and timeline entries inspect without toggling.
+Clicking a graph card inspects and focuses it without changing the plan. Its check button adds an available course to the active plan and term, or removes a planned course. If removal would invalidate previously supported planned courses, a confirmation lists the affected courses and terms. Valid alternatives are preserved, existing invalid courses are not swept into the cascade, completed history stays intact, and Undo restores the action. Locked cards inspect requirements without adding. Course-list and timeline entries inspect without toggling.
 
 Several named paths can be renamed, duplicated, exported, imported and shared. Completed history is shared across the user's alternatives. Share produces a URL-fragment snapshot with a recipient preview and explicit import into a new path; it does not transfer the sender's earned-credit status, advisor review, profile or pacing settings.
 
@@ -27,12 +27,12 @@ The degree crest shows completed and valid-planned coverage of modeled coursewor
 
 ## Current design decisions
 
-- Left-to-right progression, roughly 1.95:1 overall shape, deterministic organic spacing. Selection gently opens nearby spacing while unrelated routes fade. Connections use cyan prerequisites, violet onward possibilities, amber needed courses and red missing links.
+- Left-to-right progression, a wide course field of at least 2.6:1, deterministic symmetric lattice spacing and invisible routing waypoints. Card positions and route geometry stay fixed during inspection. Grey catalog pipes stay visible; supported chosen links remain teal, available options are dotted violet, and inspected unmet options use red dashes. See [GRAPH-DESIGN.md](GRAPH-DESIGN.md) for the layout/routing research and rules.
 - Fixed **336×252, 4:3** course cards. No subject icons. Full-width bold titles use 28/25/23 px before map scaling, according to title length. Foundation is white, Core blue, Advanced purple and Graduate charcoal, with a neutral Undergraduate fallback. These are sourced curriculum roles, not universal difficulty scores.
 - Depth increases by stage on the right and bottom. Saved choices retain their curriculum color and have pastel-green checks. Available buttons have light-grey fill and a subtle green glow. A focused locked card turns yellow and prominently emphasizes its lock.
-- Default and Reset view zoom is **0.575**. Focus targets the latest inspected course or an available option at a closer scale (preferred 0.95 where space allows). Pan and zoom-out bounds keep the graph reachable.
+- First load and **Full map** fit all courses, the goal, and routed connections. Blank-canvas clicks use **0.4** zoom until a course is inspected or another camera command is used. **Select window** replaces Focus: fit all, drag a rectangle, then zoom into it; Escape cancels. Reset retains **0.575**. Node inspection prefers **0.85** while keeping the selected card visible.
 - Minimap is **off by default**, square-cornered, subtly bordered, and positioned near the upper-right map controls. The legend has a light-grey background; its 12 px labels and the arrow-marked Course numbers & labels helper share a row.
-- Square, restrained map header: placeholder portrait, **Stephen’s**, then **Systems Engineer Overload aka Future AI CTO**. The editable build name is the visual priority. **Full map**, Focus, Reset view and Minimap controls live here.
+- Square, restrained map header: placeholder portrait, **Stephen’s**, then **Systems Engineer Overload aka Future AI CTO**. The editable build name is the visual priority. **Full map**, Select window, Reset view and Minimap controls live here.
 - Course map / Timeline / Course list navigation lives in the sidebar. The sidebar collapses smoothly to an icon rail, with Create path, Export, Import and Share. Preview stays **below the map at every width**.
 - Search, Autofill, the top Program goal shortcut and top-bar About button are removed. Dormant autofill code and `SubjectIcon.tsx` remain; do not restore them to the UI without a new request.
 - MIT is the default appearance. Plain, Dark, NYU, Stanford and Virginia Tech only change styling; all use MIT data and preserve graph semantics. Disclaimers remain small in the footer, with detailed scope accessible separately.
@@ -44,6 +44,10 @@ There is **no authentication, Supabase database or cloud synchronization**. The 
 Paths use versioned localStorage: `coursegraph.paths.v1`, with prior-version recovery in `coursegraph.paths.backup.v1`. Import/export validates versioned JSON. Preserve invalid-data recovery copies and user plans when debugging.
 
 Storage is origin-specific: `localhost`, `127.0.0.1`, different ports and `coursegraph.my` each have separate saved plans. Use **Export → Import** to move decisions; do not clear storage or assume a missing plan was deleted. Export is the current backup method. Shared links expose the encoded plan to anyone who receives the link; they are snapshots, not synchronized collaboration.
+
+## Current graph release verification
+
+The continuous-constellation change uses 32 focused layout/routing/appearance/camera checks. Stephen requested skipping unrelated slow checks and reusing built output for deployment. The importer is unchanged; its tests were not rerun. Full regression commands below remain available when their scope is relevant. Persistence was reconsidered and explicitly deferred again: this remains a demo prototype.
 
 ## Run and verify
 

@@ -14,9 +14,15 @@ Do not start additional capture or rendering until asked to resume. Existing fil
 
 Preparation exists in [STORYBOARD.md](media/STORYBOARD.md) and `scripts/render_demo.py`. No final films have been rendered.
 
+## Completed graph refinement
+
+- [x] Directional geometric lattice and stable layered ordering with virtual long-edge vertices, visible grey pipes, obstacle-aware curves, persistent chosen paths, and dotted available options.
+- [x] Full-map first load, blank-click 0.4 zoom, and drag-to-zoom Select window.
+- [x] Partially filled demo seed for new visitors; preserve all existing local plans.
+
 ## Product work requiring a future scope decision
 
-- [ ] Add authenticated accounts and cross-device saving if desired. Supabase was discussed but is not connected. Preserve/export local plans before any migration.
+- [ ] Add authenticated accounts and cross-device saving if desired. Supabase was discussed but is not connected. Stephen explicitly deferred persistence again on October 23: keep this a demo prototype. Preserve/export local plans before any migration.
 - [ ] Ingest validated term-specific sections and meeting times, then connect the existing conflict engine to selected sections. Keep Schedule unverified until that data is present.
 - [ ] Expand and verify major/minor/MEng requirements, GIRs, electives, equivalencies, transfer credit and overlapping-degree allocation with advisors. Keep modeled progress distinct from certification.
 - [ ] Validate the experience with real students and advisors, including a teenage prospective-student walkthrough. The existing persona review is not actual user research.

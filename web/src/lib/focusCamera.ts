@@ -1,13 +1,21 @@
 export interface FocusRect { x:number; y:number; width:number; height:number }
 export interface FocusOptions { currentZoom?:number; preferredZoom?:number; obstacles?:FocusRect[] }
 export const DEFAULT_MAP_ZOOM=.575;
+export const BLANK_MAP_ZOOM=.4;
+/** Fit actual routed bounds; preserve an intentional browsing scale until a node is clicked. */
+export function getOverviewCamera(bounds:FocusRect,viewport:{width:number;height:number},zoom?:number){
+  const padding=48,bottom=72;
+  const fit=Math.max(.001,Math.min(1,(Math.max(1,viewport.width)-padding*2)/Math.max(1,bounds.width),(Math.max(1,viewport.height)-padding-bottom)/Math.max(1,bounds.height)));
+  const scale=zoom??fit;
+  return {x:bounds.x+bounds.width/2,y:bounds.y+bounds.height/2+(bottom-padding)/(2*scale),zoom:scale};
+}
 
 /** Keep the full graph readable at the furthest zoom and reachable within a bounded canvas. */
 export function getGraphViewportLimits(bounds:FocusRect,viewport:{width:number;height:number}){
   const width=Math.max(1,viewport.width),height=Math.max(1,viewport.height);
-  const minZoom=Math.min(DEFAULT_MAP_ZOOM,Math.max(.01,Math.min(
-    Math.max(1,width-48)/Math.max(1,bounds.width),
-    Math.max(1,height-48)/Math.max(1,bounds.height),
+  const minZoom=Math.min(BLANK_MAP_ZOOM,Math.max(.001,Math.min(
+    Math.max(1,width-96)/Math.max(1,bounds.width),
+    Math.max(1,height-120)/Math.max(1,bounds.height),
   )));
   // Enough space to focus boundary cards, without allowing a pan into an empty canvas.
   const marginX=width/(2*DEFAULT_MAP_ZOOM),marginY=height/(2*DEFAULT_MAP_ZOOM);
@@ -60,4 +68,10 @@ export function getCourseFocusCamera(selected:FocusRect,neighbors:FocusRect[],vi
     x:selected.x+selected.width/2+(width/2-free.x-free.width/2)/zoom,
     y:selected.y+selected.height/2+(height/2-free.y-free.height/2)/zoom,
   };
+}
+
+/** Convert a drag in canvas pixels to a graph-space camera, in either drag direction. */
+export function getWindowCamera(rect:FocusRect,current:{x:number;y:number;zoom:number},viewport:{width:number;height:number},minZoom=.01){
+  const zoom=Math.max(minZoom,Math.min(1.4,current.zoom*Math.min(Math.max(1,viewport.width-64)/Math.max(1,rect.width),Math.max(1,viewport.height-100)/Math.max(1,rect.height))));
+  return {x:(rect.x+rect.width/2-current.x)/current.zoom,y:(rect.y+rect.height/2-current.y)/current.zoom+18/zoom,zoom};
 }

@@ -5,7 +5,7 @@ import { assignConnectionLanes, connectionId, createConnectionRoute, segmentEnte
 import { catalog } from '../data/catalog';
 import { getPrerequisiteIds } from '../domain/requirements';
 import { getCourseStage, getProgramCourseClosure } from '../domain/progression';
-import { layoutBalancedCourses } from './courseLayout';
+import { layoutGeometricCourses } from './courseLayout';
 const node=(x:number,y:number):RouteNode=>({x,y,width:244,height:150});
 
 test('shared-target lanes are centered, ordered geometrically and stable under input reordering',()=>{
@@ -73,7 +73,7 @@ test('horizontal open spans flow smoothly while blocked spans retain safe rounde
  for(const middle of [node(350,650),node(350,110)]){
   const nodes=new Map([['source',node(0,0)],['middle',middle],['target',node(750,260)]]);
   const lane=assignConnectionLanes([{source:'source',target:'target'}],nodes,'LR').get('source-target');
-  for(const radius of [40,64]){
+  for(const radius of [120]){
    const route=createConnectionRoute({x:244,y:75},{x:750,y:335},lane,radius);
    assertRouteClear(route.path,[...nodes.values()]);
    assert.deepEqual(route.points[0],{x:244,y:75});assert.deepEqual(route.points.at(-1),{x:750,y:335});
@@ -109,16 +109,16 @@ function assertRouteClear(path:string,cards:RouteNode[],label='route'){
  }
 }
 
-test('horizontal organic MIT maps with sourced program roles keep resting and selected curves outside every course card',()=>{
+test('directional geometric MIT maps with sourced program roles keep resting and selected curves outside every course card',()=>{
  for(const program of catalog.programs){
   const ids=new Set(getProgramCourseClosure(program,catalog.courses).courseIds),courses=catalog.courses.filter(c=>ids.has(c.id));
   const sizes=courses.map(c=>({id:c.id,width:COURSE_CARD_WIDTH,height:COURSE_CARD_HEIGHT,progression:getCourseStage(c,catalog.courses,program).order}));
   const links=courses.flatMap(c=>[...new Set([...getPrerequisiteIds(c.prerequisites),...getPrerequisiteIds(c.corequisites)])].filter(id=>ids.has(id)).map(source=>({source,target:c.id})));
-  const layout=layoutBalancedCourses(sizes,links),nodes=new Map(sizes.map(n=>[n.id,{...layout.positions.get(n.id)!,width:n.width,height:n.height}]));
-  const lanes=assignConnectionLanes(links,nodes,'LR');
+  const layout=layoutGeometricCourses(sizes,links),nodes=new Map(sizes.map(n=>[n.id,{...layout.positions.get(n.id)!,width:n.width,height:n.height}]));
+  const lanes=assignConnectionLanes(links,nodes,'LR',true);
   for(const link of links){
    const source=nodes.get(link.source)!,target=nodes.get(link.target)!;
-   for(const radius of [40,64]){
+   for(const radius of [120]){
     const route=createConnectionRoute({x:source.x+source.width,y:source.y+source.height/2},{x:target.x,y:target.y+target.height/2},lanes.get(connectionId(link)),radius);
     assertRouteClear(route.path,[...nodes.values()],`${program.id}: ${connectionId(link)} at ${radius}px radius`);
     assert.ok(route.points.every(p=>p.x>=layout.overviewBounds.left&&p.x<=layout.overviewBounds.right&&p.y>=layout.overviewBounds.top&&p.y<=layout.overviewBounds.bottom),`${program.id}: ${connectionId(link)} stays within overview ${JSON.stringify(layout.overviewBounds)}; outside ${JSON.stringify(route.points.filter(p=>p.x<layout.overviewBounds.left||p.x>layout.overviewBounds.right||p.y<layout.overviewBounds.top||p.y>layout.overviewBounds.bottom))}`);

@@ -1,7 +1,7 @@
 import { COURSE_CARD_WIDTH, COURSE_CARD_HEIGHT } from './courseTypography';
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { COURSE_COLUMN_GAP, COURSE_ROW_GAP, PROGRAM_GOAL_WIDTH, PROGRAM_GOAL_HEIGHT, PROGRAM_GOAL_GAP, getProgramGoalPosition, ORGANIC_HORIZONTAL_GAP, ORGANIC_VERTICAL_GAP, layoutBalancedCourses, layoutCourses, softenCoursePlacement, type LayoutCourse, type LayoutLink } from './courseLayout';
+import { COURSE_COLUMN_GAP, COURSE_ROW_GAP, PROGRAM_GOAL_WIDTH, PROGRAM_GOAL_HEIGHT, PROGRAM_GOAL_GAP, getProgramGoalPosition, ORGANIC_HORIZONTAL_GAP, ORGANIC_VERTICAL_GAP, layoutBalancedCourses, layoutGeometricCourses, layoutCourses, softenCoursePlacement, type LayoutCourse, type LayoutLink } from './courseLayout';
 import { catalog } from '../data/catalog';
 import { getCourseStage, getProgramCourseClosure } from '../domain/progression';
 import { getPrerequisiteIds } from '../domain/requirements';
@@ -121,4 +121,32 @@ test('sourced curriculum roles advance left to right while prerequisite order ta
  const dependency=layoutBalancedCourses(nodes,[{source:'0.advanced',target:'99.foundation'}]);
  assert.ok(dependency.positions.get('99.foundation')!.x>dependency.positions.get('0.advanced')!.x);
  assert.deepEqual(snapshot(layout),snapshot(layoutBalancedCourses([...nodes].reverse(),[])));
+});
+
+test('layer sweeps untangle a crossed matching, including long edges through intermediate ranks',async()=>{
+ const {orderCourseLayers}=await import('./courseLayout');
+ const ids=['a','b','c','d','e'];const ranks=new Map([['a',0],['b',0],['c',2],['d',2],['e',1]]);
+ const links=[{source:'a',target:'d'},{source:'b',target:'c'}];
+ const rows=orderCourseLayers(ids,ranks,links),first=rows.get(0)!,last=rows.get(2)!;
+ assert.ok((first.indexOf('a')-first.indexOf('b'))*(last.indexOf('d')-last.indexOf('c'))>0);
+ assert.deepEqual(rows,orderCourseLayers([...ids].reverse(),ranks,[...links].reverse()));
+});
+
+
+test('directional lattice preserves forward dependencies, symmetric slots and stable geometry for every major',()=>{
+ for(const program of catalog.programs){
+  const ids=new Set(getProgramCourseClosure(program,catalog.courses).courseIds);
+  const courses=catalog.courses.filter(c=>ids.has(c.id));
+  const nodes=courses.map(c=>({id:c.id,width:COURSE_CARD_WIDTH,height:COURSE_CARD_HEIGHT,progression:getCourseStage(c,catalog.courses,program).order}));
+  const links=courses.flatMap(c=>[...new Set([...getPrerequisiteIds(c.prerequisites),...getPrerequisiteIds(c.corequisites)])].filter(id=>ids.has(id)).map(source=>({source,target:c.id})));
+  const layout=layoutGeometricCourses(nodes,links);
+  for(const e of links)if(layout.ranks.get(e.source)!<layout.ranks.get(e.target)!)assert.ok(layout.positions.get(e.target)!.x>layout.positions.get(e.source)!.x+COURSE_CARD_WIDTH);
+  for(const band of layout.bands){
+   const ys=band.courseIds.map(id=>layout.positions.get(id)!.y).sort((a,b)=>a-b);
+   assert.ok(Math.abs(ys[0]+ys.at(-1)!+COURSE_CARD_HEIGHT-layout.bounds.height)<.001);
+   for(let i=1;i<ys.length;i++)assert.ok(ys[i]-ys[i-1]>=COURSE_CARD_HEIGHT+179);
+  }
+  assert.deepEqual(snapshot(layout),snapshot(layoutGeometricCourses([...nodes].reverse(),[...links].reverse())));
+  assert.ok(layout.bounds.width/layout.bounds.height>=2.59);
+ }
 });

@@ -58,3 +58,24 @@ test('resetting a selected course keeps the preset zoom and avoids a top-right o
  const x=viewport.width/2+(selected.x-camera.x)*camera.zoom,y=viewport.height/2+(selected.y-camera.y)*camera.zoom;
  assert.ok(x+selected.width*camera.zoom<=overview.x||y>=overview.y+overview.height);
 });
+
+test('overview fits complete routed bounds while blank-canvas browsing stays exactly at 0.4',async()=>{
+ const {getOverviewCamera,getGraphViewportLimits}=await import('./focusCamera');
+ for(const viewport of [{width:1200,height:700},{width:340,height:300}]){
+  const bounds={x:-500,y:-300,width:7300,height:3100};
+  const camera=getOverviewCamera(bounds,viewport);
+  const left=viewport.width/2+(bounds.x-camera.x)*camera.zoom,top=viewport.height/2+(bounds.y-camera.y)*camera.zoom;
+  assert.ok(left>=47.9&&top>=47.9);
+  assert.ok(left+bounds.width*camera.zoom<=viewport.width-47.9);
+  assert.ok(top+bounds.height*camera.zoom<=viewport.height-71.9);
+  assert.ok(camera.zoom>=getGraphViewportLimits(bounds,viewport).minZoom);
+  assert.equal(getOverviewCamera(bounds,viewport,.4).zoom,.4);
+ }
+});
+
+test('window zoom converts a selected screen box into a centered graph region and caps tiny selections',async()=>{
+ const {getWindowCamera}=await import('./focusCamera');
+ const camera=getWindowCamera({x:100,y:80,width:400,height:200},{x:-100,y:-50,zoom:.2},{width:1000,height:600});
+ assert.equal(camera.x,2000);assert.ok(Math.abs(camera.zoom-.468)<.00001);
+ assert.equal(getWindowCamera({x:0,y:0,width:1,height:1},{x:0,y:0,zoom:.4},{width:1000,height:600}).zoom,1.4);
+});
