@@ -6,7 +6,7 @@ CourseGraph is Stephen Nguyen's visual academic-path prototype, inspired by Diab
 
 - **Live:** [coursegraph.my](https://coursegraph.my/)
 - **Repository:** [Stephenitis/CourseGraph, master](https://github.com/Stephenitis/CourseGraph/tree/master)
-- **App release:** [PR #1](https://github.com/Stephenitis/CourseGraph/pull/1), merged to master as `2babc38e75bd14932524b4de9170f337e4569078`. App source head was `fda36cd5e77a547934e3e6243ef214627d1ed4e8`.
+- **App release:** [PR #3](https://github.com/Stephenitis/CourseGraph/pull/3), merged to master as `709ebf0`. App source head was `f6a697dea0fbac17e13bb20b5f55aead2286032a`.
 - **Runnable source:** `web/`. The original Rails app remains for history and is not required.
 - **Local checkout:** `/Users/eeveehome/Documents/ChatGPT/CourseGraph`.
 - **Next work:** [TODO.md](TODO.md). Media production is explicitly deferred at Stephen's request.
@@ -66,13 +66,13 @@ npm --prefix web run preview -- --port 4173 --strictPort
 
 Use Node 24; Node 22+ is supported. On this Mac the bundled Node directory is `/Users/eeveehome/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin`; prepend it to PATH if the shell runtime is absent or older. Development normally uses port 5173. Preview serves `web/dist` and requires a new build after edits. Ports 4174/4175 were temporary review servers; check listeners instead of assuming they remain active. Prefer one stable localhost origin to keep saved plans consistent.
 
-Release verification: **135 TypeScript tests and 5 Python importer tests passed**. The six camera tests also passed after the final zoom change. Production compilation passed after the final header/legend changes. Browser inspection verified 39 CS cards at 4:3, title clearance, removed icons and curriculum colors. This was not an exhaustive final mobile, dark-mode, reduced-motion or screen-reader audit, and no real teenage user study occurred.
+Original release verification: **135 TypeScript tests and 5 Python importer tests passed**. The six camera tests also passed after the final zoom change. Production compilation passed after the final header/legend changes. Browser inspection verified 39 CS cards at 4:3, title clearance, removed icons and curriculum colors. This was not an exhaustive final mobile, dark-mode, reduced-motion or screen-reader audit, and no real teenage user study occurred.
 
 ## Deployment and GitHub
 
 Production is an existing public **Sites** project, `appgprj_6adb849892d08191bf9dc2fcfb1fa83d`. Its config is `web/.openai/hosting.json`; output is `web/dist`. The secondary address is [coursegraph-paths.rlze.chatgpt.site](https://coursegraph-paths.rlze.chatgpt.site). Namecheap DNS and TLS are active. Vercel is compatible but not the current host; no Vercel project was created by this chat.
 
-Latest publication: Sites version **2**, source commit `a549d4a8312aa78b9d9aa2352ac740476cbb1a9e`, version ID `appgprj_6adb849892d08191bf9dc2fcfb1fa83d~appgver_f135bd9700a8819184cca78fafb2b111`, deployment `appgdep_6adbb5c0e848819191ecb944b756a94d`. It succeeded October 23, 2026 at 19:30:21 UTC. The custom-domain HTML was verified to load `index-CNf6gpzX.js` and `index-5UVpx71W.css`, matching the latest build.
+Latest publication: Sites version **3**, source commit `b20fc32d96e2afd0502015a3f6050449b6f5bc37`, version ID `appgprj_6adb849892d08191bf9dc2fcfb1fa83d~appgver_f608573b1be4819197b737be7d4c18fc`, deployment `appgdep_6adbc235fd58819193efca6648d27da6`. It succeeded October 23, 2026 at 20:23:26 UTC. The custom-domain HTML was verified to load `index-plE_p7h3.js` and `index-BzJ0wVyw.css`, matching the latest build.
 
 For a future app release, read the installed Sites skill and use the existing project and public audience. Build `web/`, synchronize it into the ignored `.site-stage/` checkout (exclude `.git`, `node_modules`, `.env*` and build metadata), then use the Sites source-package helper, save a version, deploy that exact version and verify the public asset references. Pass fresh short-lived credentials through hidden stdin only. See [DEPLOYMENT.md](DEPLOYMENT.md). GitHub merge alone does **not** deploy Sites.
 
