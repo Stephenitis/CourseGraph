@@ -5,6 +5,7 @@ export interface RouteNode { x: number; y: number; width: number; height: number
 export interface RouteLink { source: string; target: string }
 export interface ConnectionLane {
   direction?: 'LR' | 'BT';
+  geometric?:boolean;
   sourceLane: number;
   sourceCount: number;
   targetLane: number;
@@ -25,11 +26,11 @@ const centerY = (node: RouteNode) => node.y + node.height / 2;
 const compareId = (a: RouteLink, b: RouteLink) => connectionId(a).localeCompare(connectionId(b));
 const finite = (value: number, fallback = 0) => Number.isFinite(value) ? value : fallback;
 
-export function assignConnectionLanes(links: RouteLink[], nodes: Map<string, RouteNode>, direction:'LR'|'BT'='LR'): Map<string, ConnectionLane> {
+export function assignConnectionLanes(links: RouteLink[], nodes: Map<string, RouteNode>, direction:'LR'|'BT'='LR',geometric=false): Map<string, ConnectionLane> {
   if(direction==='BT'){
     // Rotate the layout into one canonical flow axis, retaining the same lane ordering and clearance rules.
     const rotated=new Map([...nodes].map(([id,n])=>[id,{x:-n.y-n.height,y:n.x,width:n.height,height:n.width}]));
-    const lanes=assignConnectionLanes(links,rotated);
+    const lanes=assignConnectionLanes(links,rotated,'LR',geometric);
     lanes.forEach(lane=>{lane.direction='BT';});
     return lanes;
   }
@@ -61,7 +62,7 @@ export function assignConnectionLanes(links: RouteLink[], nodes: Map<string, Rou
     const source = nodes.get(link.source), target = nodes.get(link.target);
     if (!source || !target) continue;
     const lane=result.get(connectionId(link))!;
-    lane.sourceNode=source;lane.targetNode=target;
+    lane.geometric=geometric;lane.sourceNode=source;lane.targetNode=target;
     lane.obstacles=all.filter(n=>n!==source&&n!==target);
     lane.routedPoints=routePoints({x:source.x+source.width,y:centerY(source)},{x:target.x,y:centerY(target)},lane);
     // Preserve the bounds hint consumed by the overview layout, only when genuinely needed.
@@ -144,6 +145,35 @@ function obstacleRoute(start:Point,end:Point,obstacles:RouteNode[],bounds?:Route
   return simplify(result.reverse());
 }
 
+/** Euclidean visibility routing: turns only at obstacle corners, rather than
+ * forcing a long branch onto an outer rectangular rail. Bend cost favors calm
+ * paths; exact segment clearance and bounded rounding keep curves off cards.
+ */
+function flowingObstacleRoute(start:Point,end:Point,obstacles:RouteNode[]):Point[]{
+  if(clear([start,end],obstacles))return [start,end];
+  const margin=1200;
+  const left=Math.min(start.x,end.x)-margin,right=Math.max(start.x,end.x)+margin;
+  const top=Math.min(start.y,end.y)-margin,bottom=Math.max(start.y,end.y)+margin;
+  const corners=obstacles.flatMap(n=>[{x:n.x,y:n.y},{x:n.x+n.width,y:n.y},{x:n.x,y:n.y+n.height},{x:n.x+n.width,y:n.y+n.height}]);
+  const points=[start,end,...corners.filter(p=>p.x>=left&&p.x<=right&&p.y>=top&&p.y<=bottom&&!obstacles.some(n=>p.x>n.x+.001&&p.x<n.x+n.width-.001&&p.y>n.y+.001&&p.y<n.y+n.height-.001))];
+  const distance=new Float64Array(points.length).fill(Infinity),previous=new Int32Array(points.length).fill(-1),visited=new Uint8Array(points.length);
+  distance[0]=0;
+  for(let step=0;step<points.length;step++){
+    let current=-1,best=Infinity;
+    for(let i=0;i<points.length;i++){const estimate=distance[i]+Math.hypot(points[i].x-end.x,points[i].y-end.y);if(!visited[i]&&estimate<best){best=estimate;current=i;}}
+    if(current<0)break;
+    if(current===1){const route:Point[]=[];for(let i=1;i>=0;i=previous[i])route.push(points[i]);return simplify(route.reverse());}
+    visited[current]=1;
+    for(let next=1;next<points.length;next++){
+      if(visited[next]||next===current)continue;
+      const cost=distance[current]+Math.hypot(points[next].x-points[current].x,points[next].y-points[current].y)+(next===1?0:32);
+      if(cost>=distance[next]||!clear([points[current],points[next]],obstacles))continue;
+      distance[next]=cost;previous[next]=current;
+    }
+  }
+  return [];
+}
+
 function routePoints(source:Point,target:Point,lane:ConnectionLane):Point[]{
   const gap=target.x-source.x,fan=gap>24?Math.min(18,gap/4):18;
   const sourceLaneY=source.y+finite(lane.sourceLane)*CONNECTION_LANE_SPACING;
@@ -157,14 +187,46 @@ function routePoints(source:Point,target:Point,lane:ConnectionLane):Point[]{
   const endpointObstacles=[lane.sourceNode,lane.targetNode].filter((n):n is RouteNode=>!!n).map(n=>expanded(n,7));
   const other=lane.obstacles??[];
   const middle=[from,{x:corridor,y:from.y},{x:corridor,y:to.y},to];
-  for(const padding of [24+ordinal*spacing,14,1]){
+  for(const padding of [14+Math.min(3,ordinal*spacing),7,1]){
     const obstacles=[...other.map(n=>expanded(n,padding)),...endpointObstacles];
+    if(lane.geometric&&gap>24){
+      // Repeated 60/30-degree diagonals and horizontal runs form calm geometric motifs.
+      for(const angle of [Math.PI/3,Math.PI/6]){
+        const run=Math.abs(to.y-from.y)/Math.tan(angle),room=to.x-from.x-run;
+        if(room<0)continue;
+        const lead=room/2;
+        const geometricPath=[from,{x:from.x+lead,y:from.y},{x:to.x-lead,y:to.y},to];
+        if(clear(geometricPath,obstacles))return [...start,...geometricPath.slice(1,-1),...finish];
+      }
+    }
+    if(lane.geometric&&gap>80){
+      // Empty routing waypoints form two matching diagonals joined by a level
+      // run. Search these geometric channels before arbitrary obstacle corners.
+      const candidates:{points:Point[];cost:number}[]=[];
+      const center=(from.y+to.y)/2;
+      const rails=[from.y,to.y,center,...Array.from({length:12},(_,i)=>center+(i%2?1:-1)*(Math.floor(i/2)+1)*216)];
+      const board=[...other,...[lane.sourceNode,lane.targetNode].filter((n):n is RouteNode=>!!n)];
+      const top=Math.min(from.y,to.y,...board.map(n=>n.y))-MAX_OUTSIDE_RAIL_SPREAD;
+      const bottom=Math.max(from.y,to.y,...board.map(n=>n.y+n.height))+MAX_OUTSIDE_RAIL_SPREAD;
+      for(const rail of rails.filter(y=>y>=top&&y<=bottom))for(const angle of [Math.PI/6,Math.PI/3]){
+        const first=Math.abs(rail-from.y)/Math.tan(angle),last=Math.abs(to.y-rail)/Math.tan(angle);
+        const room=to.x-from.x-first-last;
+        if(room<48)continue;
+        const lead=Math.min(56,room/4);
+        const points=[from,{x:from.x+lead,y:from.y},{x:from.x+lead+first,y:rail},{x:to.x-lead-last,y:rail},{x:to.x-lead,y:to.y},to];
+        if(clear(points,obstacles))candidates.push({points,cost:points.reduce((sum,p,i)=>sum+(i?Math.hypot(p.x-points[i-1].x,p.y-points[i-1].y):0),0)});
+      }
+      candidates.sort((a,b)=>a.cost-b.cost);
+      if(candidates.length)return [...start,...candidates[0].points.slice(1,-1),...finish];
+    }
     if(gap>24&&clear(middle,obstacles))return [...start,...middle.slice(1,-1),...finish];
     // Most branches need a nearby corridor, not a search over every course on
     // the map. Restrict the first search and include every obstacle touching it.
     const margin=160;
     const bounds={x:Math.min(from.x,to.x)-margin,y:Math.min(from.y,to.y)-margin,width:Math.abs(to.x-from.x)+margin*2,height:Math.abs(to.y-from.y)+margin*2};
     const nearby=obstacles.filter(n=>n.x<=bounds.x+bounds.width&&n.x+n.width>=bounds.x&&n.y<=bounds.y+bounds.height&&n.y+n.height>=bounds.y);
+    const flowing=flowingObstacleRoute(from,to,obstacles);
+    if(flowing.length)return [...start,...flowing.slice(1,-1),...finish];
     const local=obstacleRoute(from,to,nearby,bounds);
     const routed=local.length?local:obstacleRoute(from,to,obstacles);
     if(routed.length)return [...start,...routed.slice(1,-1),...finish];
@@ -182,13 +244,13 @@ function roundedPolyline(input: Point[], radius=12,obstacles:RouteNode[]=[]): st
   for(let i=1;i<points.length-1;i++){
     const before=points[i-1], at=points[i], after=points[i+1];
     const distanceBefore=Math.hypot(at.x-before.x,at.y-before.y),distanceAfter=Math.hypot(after.x-at.x,after.y-at.y);
-    // A quadratic bend stays inside this square around its vertex. Limit that
-    // square by actual card distance so even narrow emergency routes stay clear.
-    const clearance=Math.min(Infinity,...obstacles.map(n=>Math.max(n.x-at.x,at.x-n.x-n.width,n.y-at.y,at.y-n.y-n.height,0)));
-    const bend=Math.max(0,Math.min(radius,distanceBefore/2,distanceAfter/2,clearance-.01));
-    if(!bend){d+=` L ${n(at.x)} ${n(at.y)}`;continue;}
-    const entry={x:at.x+(before.x-at.x)*bend/distanceBefore,y:at.y+(before.y-at.y)*bend/distanceBefore};
-    const exit={x:at.x+(after.x-at.x)*bend/distanceAfter,y:at.y+(after.y-at.y)*bend/distanceAfter};
+    // Prove the actual quadratic clear, allowing generous curves where a
+    // square clearance bound would unnecessarily force a tiny elbow.
+    let bend=Math.min(radius,distanceBefore/2,distanceAfter/2);
+    const endpoints=()=>({entry:{x:at.x+(before.x-at.x)*bend/distanceBefore,y:at.y+(before.y-at.y)*bend/distanceBefore},exit:{x:at.x+(after.x-at.x)*bend/distanceAfter,y:at.y+(after.y-at.y)*bend/distanceAfter}});
+    let {entry,exit}=endpoints();
+    while(bend>.5&&!clearQuadratic(entry,at,exit,obstacles)){bend*=.5;({entry,exit}=endpoints());}
+    if(bend<=.5){d+=` L ${n(at.x)} ${n(at.y)}`;continue;}
     d+=` L ${n(entry.x)} ${n(entry.y)} Q ${n(at.x)} ${n(at.y)} ${n(exit.x)} ${n(exit.y)}`;
   }
   const last=points[points.length-1];
@@ -234,7 +296,7 @@ export function createConnectionRoute(source: Point, target: Point, lane: Connec
   for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i],length=Math.hypot(b.x-a.x,b.y-a.y);if(length>longest){longest=length;label={x:(a.x+b.x)/2,y:(a.y+b.y)/2};}}
   // Restrict rounding near actual cards, including emergency narrow-clearance corridors.
   const obstacles=[...(lane.obstacles??[]),lane.sourceNode,lane.targetNode].filter((n):n is RouteNode=>!!n);
-  const shortcut=radius>=24?flowingShortcut(points,radius,obstacles):undefined;
+  const shortcut=radius>=24&&!lane.geometric?flowingShortcut(points,radius,obstacles):undefined;
   if(shortcut)label=shortcut.label;
   return {path:shortcut?.path??roundedPolyline(points,radius,obstacles),points,labelX:label.x,labelY:label.y,corridorX:points[3]?.x??label.x};
 }

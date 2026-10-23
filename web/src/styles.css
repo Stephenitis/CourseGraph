@@ -414,3 +414,25 @@ html,body,#root{height:100%;overflow:clip}
 
 .map-topline .map-tool-actions .map-only-toggle[aria-pressed=true]{background:#e8ecee;border-color:#75858d;color:#253841;box-shadow:inset 0 0 0 1px #75858d1a}
 :root[data-theme=dark] .map-topline .map-tool-actions .map-only-toggle[aria-pressed=true]{background:#45545d;border-color:#b0bdc5;color:#fff}
+
+/* Persistent constellation: geometry is stable, state is a separate visual layer. */
+:root{--route-chosen:#168f95;--route-available:#6878b4;--route-neutral:#8c979d;--route-context:#677d91}
+:root[data-theme=dark]{--route-chosen:#55e3db;--route-available:#aca5ff;--route-neutral:#6e828e;--route-context:#a4b7ca}
+.react-flow__edge-path{transition:stroke .2s ease,opacity .2s ease;stroke-linecap:round}
+.react-flow__edge.route-chosen .react-flow__edge-path{filter:drop-shadow(0 0 3px color-mix(in srgb,var(--route-chosen) 30%,transparent))}
+.route-halo{pointer-events:none;stroke-linecap:round;stroke-linejoin:round}
+.legend-line.route-catalog{background:var(--route-neutral)}
+.legend-line.route-chosen{background:var(--route-chosen);height:3px;box-shadow:0 0 5px color-mix(in srgb,var(--route-chosen) 30%,transparent)}
+.legend-line.route-available{background:none;border-top:3px dotted var(--route-available);height:0}
+.course-node.chosen.quiet{opacity:1}
+.course-node.chosen::before{content:'';position:absolute;left:-8px;top:calc(50% - 5px);width:10px;height:10px;background:var(--route-chosen);border:2px solid var(--canvas);border-radius:50%;box-shadow:0 0 9px color-mix(in srgb,var(--route-chosen) 45%,transparent);pointer-events:none}
+.zoom-window-surface{position:absolute;inset:0;z-index:25;cursor:crosshair;touch-action:none;outline:none;background:#168f9506}
+.zoom-window-instruction{position:absolute;top:20px;left:50%;transform:translateX(-50%);display:flex;gap:15px;align-items:center;padding:10px 14px;background:var(--surface);border:1px solid var(--route-chosen);border-radius:8px;box-shadow:0 4px 20px #10293818;font-size:13px;color:var(--ink);white-space:nowrap}
+.zoom-window-instruction span{font-size:11px;color:var(--muted)}
+.zoom-window-instruction button{font-size:12px;text-decoration:underline;cursor:pointer}
+.zoom-window-box{position:absolute;border:2px solid var(--route-chosen);background:color-mix(in srgb,var(--route-chosen) 12%,transparent);box-shadow:0 0 0 9999px #13252f12;pointer-events:none}
+.zoom-window-surface{overflow:hidden}
+@media(max-width:600px){.zoom-window-instruction{gap:9px;font-size:12px}.zoom-window-instruction span{display:none}}
+:root{--route-spark:#e3ffff}
+.react-flow__edge.route-available .react-flow__edge-path{filter:drop-shadow(0 0 2px color-mix(in srgb,var(--route-available) 25%,transparent))}
+@media(prefers-reduced-motion:reduce){.route-spark{display:none}}
