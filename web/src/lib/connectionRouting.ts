@@ -64,7 +64,15 @@ export function assignConnectionLanes(links: RouteLink[], nodes: Map<string, Rou
     const lane=result.get(connectionId(link))!;
     lane.geometric=geometric;lane.sourceNode=source;lane.targetNode=target;
     lane.obstacles=all.filter(n=>n!==source&&n!==target);
-    lane.routedPoints=routePoints({x:source.x+source.width,y:centerY(source)},{x:target.x,y:centerY(target)},lane);
+    const start={x:source.x+source.width,y:centerY(source)},end={x:target.x,y:centerY(target)};
+    if(geometric&&lane.targetCount>1&&start.x<target.x-180){
+      // All incoming edges share an identical final trunk. Each retains its own
+      // identity and state; this junction does not encode AND/OR requirements.
+      const junction={x:target.x-Math.min(180,lane.targetGutter*.4),y:end.y};
+      const approach=routePoints(start,junction,{...lane,targetLane:0,targetCount:1,targetNode:undefined,obstacles:[...lane.obstacles!,target]});
+      lane.routedPoints=approach.length?[...approach,end]:routePoints(start,end,lane);
+    }else lane.routedPoints=routePoints(start,end,lane);
+    if(geometric)lane.routedPoints=latticeSteps(lane.routedPoints,[...lane.obstacles!,source,target]);
     // Preserve the bounds hint consumed by the overview layout, only when genuinely needed.
     const top=Math.min(...all.map(n=>n.y)),bottom=Math.max(...all.map(n=>n.y+n.height));
     if(!lane.routedPoints.length)continue;
@@ -236,6 +244,34 @@ function routePoints(source:Point,target:Point,lane:ConnectionLane):Point[]{
   return []; // Impossible geometry must not be rendered as a misleading line through a course.
 }
 
+/** Replace long free spans with one-step alternating diagonals. Virtual vertices
+ * are geometry only. Keep short card-entry trunks straight and test every step.
+ */
+function latticeSteps(points:Point[],obstacles:RouteNode[]):Point[]{
+  if(!points.length)return points;
+  const result:Point[]=[points[0]];
+  for(let i=1;i<points.length;i++){
+    const a=points[i-1],b=points[i],length=Math.hypot(b.x-a.x,b.y-a.y);
+    if(length<=620){result.push(b);continue;}
+    const ux=(b.x-a.x)/length,uy=(b.y-a.y)/length;
+    const count=Math.ceil(length/560),step=length/count;
+    let replacement:Point[]|undefined;
+    for(const sign of [1,-1]){
+      for(const amplitude of [step/Math.sqrt(3)/2,24,8,2]){
+        const candidate:Point[]=[a];
+        for(let j=0;j<count;j++){
+          candidate.push({x:a.x+ux*step*(j+.5)-uy*amplitude*sign,y:a.y+uy*step*(j+.5)+ux*amplitude*sign});
+          candidate.push({x:a.x+ux*step*(j+1),y:a.y+uy*step*(j+1)});
+        }
+        if(clear(candidate,obstacles.map(n=>expanded(n,.01)))){replacement=candidate;break;}
+      }
+      if(replacement)break;
+    }
+    result.push(...(replacement?replacement.slice(1):[b]));
+  }
+  return result;
+}
+
 function roundedPolyline(input: Point[], radius=12,obstacles:RouteNode[]=[]): string {
   const points=input.filter((p,i)=>!i||p.x!==input[i-1].x||p.y!==input[i-1].y);
   if(!points.length)return '';
@@ -249,7 +285,7 @@ function roundedPolyline(input: Point[], radius=12,obstacles:RouteNode[]=[]): st
     let bend=Math.min(radius,distanceBefore/2,distanceAfter/2);
     const endpoints=()=>({entry:{x:at.x+(before.x-at.x)*bend/distanceBefore,y:at.y+(before.y-at.y)*bend/distanceBefore},exit:{x:at.x+(after.x-at.x)*bend/distanceAfter,y:at.y+(after.y-at.y)*bend/distanceAfter}});
     let {entry,exit}=endpoints();
-    while(bend>.5&&!clearQuadratic(entry,at,exit,obstacles)){bend*=.5;({entry,exit}=endpoints());}
+    while(bend>.5&&!clearQuadratic(entry,at,exit,obstacles.map(n=>expanded(n,1)))){bend*=.5;({entry,exit}=endpoints());}
     if(bend<=.5){d+=` L ${n(at.x)} ${n(at.y)}`;continue;}
     d+=` L ${n(entry.x)} ${n(entry.y)} Q ${n(at.x)} ${n(at.y)} ${n(exit.x)} ${n(exit.y)}`;
   }
@@ -291,7 +327,10 @@ export function createConnectionRoute(source: Point, target: Point, lane: Connec
   }
   const cleanSource={x:finite(source.x),y:finite(source.y)},cleanTarget={x:finite(target.x),y:finite(target.y)};
   const cached=lane.routedPoints;
-  const points=cached?.length&&equal(cached[0],cleanSource)&&equal(cached[cached.length-1],cleanTarget)?cached:routePoints(cleanSource,cleanTarget,lane);
+  // React Flow handle centers may be a few CSS pixels outside card bounds.
+  // Preserve the shared routing geometry and adapt only the visible endpoints.
+  const near=(a:Point,b:Point)=>Math.hypot(a.x-b.x,a.y-b.y)<8;
+  const points=cached?.length&&near(cached[0],cleanSource)&&near(cached[cached.length-1],cleanTarget)?[cleanSource,...cached.slice(1,-1),cleanTarget]:routePoints(cleanSource,cleanTarget,lane);
   let longest=0,label={x:(cleanSource.x+cleanTarget.x)/2,y:(cleanSource.y+cleanTarget.y)/2};
   for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i],length=Math.hypot(b.x-a.x,b.y-a.y);if(length>longest){longest=length;label={x:(a.x+b.x)/2,y:(a.y+b.y)/2};}}
   // Restrict rounding near actual cards, including emergency narrow-clearance corridors.
