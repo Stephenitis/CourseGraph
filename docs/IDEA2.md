@@ -2,7 +2,15 @@
 
 Route: `/idea2`. The original `/` map remains unchanged. The experiment is lazy-loaded, with scoped styles and transient in-memory selections. It never writes saved paths or earned history.
 
-## First-pass design
+## Current skill-tree correction
+
+The paginated compact workspace was rejected. Every course is now rendered on one pan/zoom map, fitted on load. Cards have direct +/check controls; locked controls inspect requirements. Green identifies selected courses/links, gold identifies missing preparation for the focused course, and purple identifies available successors supported by selected courses. The inspector remains beside the map. Course positions do not move with selection.
+
+Selection uses shared requirement evaluation, excluding self-credit. ALL/ANY, units, distinct counts, corequisites, and manual-review blocks are enforced for modeled preparation. Removal cascades only where remaining choices no longer support a course; Undo restores the prior set. Semester scheduling and actual earned credit remain outside this sandbox.
+
+Focused tests cover alternative-preserving removal and requirement gating. Browser checks verified all 39 CS nodes, direct selection, locked prerequisite highlights, unlocking 6.1020 through 6.1010, removal relocking, and Undo restoration. Production build passed.
+
+## Earlier design iterations (superseded)
 
 - Four compact stage tabs progress left to right by prerequisite depth. Display six course cards per page, with available courses first. These are dependency bands, not difficulty scores.
 - Selected cards are green, available cards have a green border, locked cards are muted, and missing prerequisite options are gold when inspected.
