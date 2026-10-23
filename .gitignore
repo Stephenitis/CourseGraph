@@ -14,3 +14,19 @@
 /log/*.log
 /tmp
 .DS_Store
+
+# Modern CourseGraph prototype
+node_modules/
+web/dist/
+web/.vite/
+web/.env*
+!web/.env.example
+.site-stage/
+docs/media/render-frames/
+docs/media/compositor-frames/
+*.tsbuildinfo
+
+# Private checkout evidence from the domain-purchase chat
+/namecheap-*.png
+/namecheap-*.jpg
+__pycache__/

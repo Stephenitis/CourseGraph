@@ -1,0 +1,20 @@
+.inspiration-panel{margin:18px 6px 14px;border-top:1px solid var(--line);padding-top:14px;color:var(--ink)}
+.inspiration-panel>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;list-style:none;padding:5px 0;font-size:11px;font-weight:650;border-radius:4px}
+.inspiration-panel>summary::-webkit-details-marker{display:none}
+.inspiration-panel>summary:focus-visible{outline:2px solid var(--prereq);outline-offset:4px}
+.inspiration-heading{display:flex;align-items:center;gap:7px}
+.inspiration-heading>svg{color:var(--accent)}
+.inspiration-chevron{color:var(--muted);transition:transform .18s}
+.inspiration-panel[open] .inspiration-chevron{transform:rotate(180deg)}
+.inspiration-intro,.inspiration-note{font-size:10px;line-height:1.6;color:var(--muted);margin:8px 0 12px}
+.inspiration-talks{display:grid;gap:9px;max-height:320px;overflow-y:auto;scrollbar-width:thin;padding:1px 3px 2px 1px}
+.inspiration-talk{padding:12px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);box-shadow:var(--shadow)}
+.inspiration-format{font-size:8px;font-weight:650;text-transform:uppercase;letter-spacing:.65px;color:var(--muted)}
+.inspiration-video{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;font-family:Manrope,sans-serif;font-size:11px;font-weight:700;line-height:1.6;margin-top:6px;color:var(--ink)}
+.inspiration-video>svg{margin-top:3px;color:var(--accent)}
+.inspiration-video:hover>span{text-decoration:underline;text-underline-offset:3px}
+.inspiration-speaker{font-size:9px;font-weight:600;line-height:1.5;margin:5px 0;color:var(--accent)}
+.inspiration-why{font-size:10px;line-height:1.6;margin:6px 0;color:var(--muted)}
+.inspiration-source{font-size:9px;text-decoration:underline;text-underline-offset:2px;color:var(--muted)}
+.inspiration-note{font-size:9px;margin-bottom:0}
+@media(prefers-reduced-motion:reduce){.inspiration-chevron{transition:none}}
