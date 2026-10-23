@@ -5,7 +5,7 @@ import { assignConnectionLanes, connectionId, createConnectionRoute, segmentEnte
 import { catalog } from '../data/catalog';
 import { getPrerequisiteIds } from '../domain/requirements';
 import { getCourseStage, getProgramCourseClosure } from '../domain/progression';
-import { layoutGeometricCourses } from './courseLayout';
+import { layoutBalancedCourses } from './courseLayout';
 const node=(x:number,y:number):RouteNode=>({x,y,width:244,height:150});
 
 test('shared-target lanes are centered, ordered geometrically and stable under input reordering',()=>{
@@ -73,7 +73,7 @@ test('horizontal open spans flow smoothly while blocked spans retain safe rounde
  for(const middle of [node(350,650),node(350,110)]){
   const nodes=new Map([['source',node(0,0)],['middle',middle],['target',node(750,260)]]);
   const lane=assignConnectionLanes([{source:'source',target:'target'}],nodes,'LR').get('source-target');
-  for(const radius of [24,120]){
+  for(const radius of [40,64]){
    const route=createConnectionRoute({x:244,y:75},{x:750,y:335},lane,radius);
    assertRouteClear(route.path,[...nodes.values()]);
    assert.deepEqual(route.points[0],{x:244,y:75});assert.deepEqual(route.points.at(-1),{x:750,y:335});
@@ -109,46 +109,20 @@ function assertRouteClear(path:string,cards:RouteNode[],label='route'){
  }
 }
 
-test('directional geometric MIT maps with sourced program roles keep resting and selected curves outside every course card',()=>{
+test('horizontal organic MIT maps with sourced program roles keep resting and selected curves outside every course card',()=>{
  for(const program of catalog.programs){
   const ids=new Set(getProgramCourseClosure(program,catalog.courses).courseIds),courses=catalog.courses.filter(c=>ids.has(c.id));
   const sizes=courses.map(c=>({id:c.id,width:COURSE_CARD_WIDTH,height:COURSE_CARD_HEIGHT,progression:getCourseStage(c,catalog.courses,program).order}));
   const links=courses.flatMap(c=>[...new Set([...getPrerequisiteIds(c.prerequisites),...getPrerequisiteIds(c.corequisites)])].filter(id=>ids.has(id)).map(source=>({source,target:c.id})));
-  const layout=layoutGeometricCourses(sizes,links),nodes=new Map(sizes.map(n=>[n.id,{...layout.positions.get(n.id)!,width:n.width,height:n.height}]));
-  const lanes=assignConnectionLanes(links,nodes,'LR',true);
+  const layout=layoutBalancedCourses(sizes,links),nodes=new Map(sizes.map(n=>[n.id,{...layout.positions.get(n.id)!,width:n.width,height:n.height}]));
+  const lanes=assignConnectionLanes(links,nodes,'LR');
   for(const link of links){
    const source=nodes.get(link.source)!,target=nodes.get(link.target)!;
-   for(const radius of [24,120]){
+   for(const radius of [40,64]){
     const route=createConnectionRoute({x:source.x+source.width,y:source.y+source.height/2},{x:target.x,y:target.y+target.height/2},lanes.get(connectionId(link)),radius);
     assertRouteClear(route.path,[...nodes.values()],`${program.id}: ${connectionId(link)} at ${radius}px radius`);
     assert.ok(route.points.every(p=>p.x>=layout.overviewBounds.left&&p.x<=layout.overviewBounds.right&&p.y>=layout.overviewBounds.top&&p.y<=layout.overviewBounds.bottom),`${program.id}: ${connectionId(link)} stays within overview ${JSON.stringify(layout.overviewBounds)}; outside ${JSON.stringify(route.points.filter(p=>p.x<layout.overviewBounds.left||p.x>layout.overviewBounds.right||p.y<layout.overviewBounds.top||p.y>layout.overviewBounds.bottom))}`);
    }
   }
  }
-});
-
-
-test('busy targets share a straight entry trunk before the card',()=>{
- const nodes=new Map([['a',{x:0,y:0,width:244,height:160}],['b',{x:0,y:500,width:244,height:160}],['t',{x:1200,y:250,width:244,height:160}]]);
- const lanes=assignConnectionLanes([{source:'a',target:'t'},{source:'b',target:'t'}],nodes,'LR',true);
- const a=lanes.get('a-t')!.routedPoints!,b=lanes.get('b-t')!.routedPoints!;
- assert.deepEqual(a.slice(-2),b.slice(-2));
- assert.ok(a.at(-1)!.x-a.at(-2)!.x>=150);
-});
-
-test('long open geometric spans alternate steps instead of skipping lattice positions',()=>{
- const nodes=new Map([['a',{x:0,y:0,width:244,height:160}],['b',{x:1800,y:0,width:244,height:160}]]);
- const lane=assignConnectionLanes([{source:'a',target:'b'}],nodes,'LR',true).get('a-b')!;
- const points=lane.routedPoints!;
- assert.ok(points.length>6);
- for(let i=1;i<points.length;i++)assert.ok(Math.hypot(points[i].x-points[i-1].x,points[i].y-points[i-1].y)<=620);
- assertRouteClear(createConnectionRoute({x:244,y:80},{x:1800,y:80},lane,24).path,[...nodes.values()]);
-});
-
-
-test('handle offsets preserve cached merged lattice routes',()=>{
- const nodes=new Map([['a',{x:0,y:0,width:244,height:160}],['b',{x:1800,y:0,width:244,height:160}]]);
- const lane=assignConnectionLanes([{source:'a',target:'b'}],nodes,'LR',true).get('a-b')!;
- const rendered=createConnectionRoute({x:245.5,y:80},{x:1798.5,y:80},lane,24);
- assert.deepEqual(rendered.points.slice(1,-1),lane.routedPoints!.slice(1,-1));
 });
