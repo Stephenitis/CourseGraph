@@ -414,3 +414,11 @@ html,body,#root{height:100%;overflow:clip}
 
 .map-topline .map-tool-actions .map-only-toggle[aria-pressed=true]{background:#e8ecee;border-color:#75858d;color:#253841;box-shadow:inset 0 0 0 1px #75858d1a}
 :root[data-theme=dark] .map-topline .map-tool-actions .map-only-toggle[aria-pressed=true]{background:#45545d;border-color:#b0bdc5;color:#fff}
+
+/* Saved routes remain continuous while temporary hover previews reveal options. */
+:root{--path-connection:#16816b}
+[data-theme="dark"]{--path-connection:#6ce1b8}
+.react-flow__edge.edge-chosen{opacity:1}
+.react-flow__edge.edge-chosen .react-flow__edge-path{stroke-linecap:round;filter:drop-shadow(0 0 3px color-mix(in srgb,var(--path-connection) 35%,transparent))}
+.legend-line.chosen{background:var(--path-connection)}
+.legend-line.violet{background:repeating-linear-gradient(to right,var(--possibility) 0 4px,transparent 4px 7px)}

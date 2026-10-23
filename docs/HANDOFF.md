@@ -4,6 +4,10 @@
 
 At Stephen’s request, the app and documentation were restored to the original `ea8a5aa` handoff snapshot. Later geometric-routing and `/idea2` experiments remain recoverable in Git history but are no longer part of the running app. Browser storage and saved plans were not cleared or migrated.
 
+## Main-map connection update
+
+Selected, semester-supported connections remain solid green in the overview and during exploration. Hovering any course temporarily reveals its prerequisites and dotted violet onward possibilities, including in Full map mode or with another course focused. Leaving restores the focused context. Hover does not change the plan, camera or layout; connection bend radii stay constant. Possibilities indicate potential contributions, not automatic eligibility. Selection and prerequisite rules remain unchanged. Validation: 138 TypeScript tests and production build passed.
+
 ## Start here
 
 CourseGraph is Stephen Nguyen's visual academic-path prototype, inspired by Diablo II skill trees. Students explore prerequisites and onward possibilities, keep alternative named plans, and place choices in semesters. The experience should feel like a thoughtful university tool: modern, personal, playful through interaction, and free of marketing copy in the working interface.
