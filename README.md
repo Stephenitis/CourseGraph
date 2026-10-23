@@ -10,7 +10,7 @@ The idea comes from the skill trees in Diablo II and other games: make progressi
 
 > “I graduated a semester late instead of a year early, this is me scratching my own itch.” — Stephen, from the original project
 
-Final media is forthcoming: [README demo GIF](docs/media/coursegraph-wow.gif) · [School explainer](docs/media/coursegraph-explainer.mp4) · [Short demo in 1080p](docs/media/coursegraph-wow.mp4) · [Overview screenshot](docs/media/overview.jpg). Captures are being refreshed for the final interface.
+Start with the [project handoff](docs/HANDOFF.md) and [remaining TODOs](docs/TODO.md). Media production is deferred at Stephen’s request. The [latest live reference](docs/media/live-latest.jpg) and other images in `docs/media/` are release/interim references; the final screenshot set, explainer and README GIF are not finished.
 
 ## Try a possibility
 
@@ -36,12 +36,12 @@ These starting paths are illustrative, not records of a real student or complete
 - Starts with a restrained **MIT** appearance and offers **Plain, Dark, MIT, NYU, Stanford, and Virginia Tech** themes. Graph meanings and curriculum-role surfaces remain consistent. Every theme still uses MIT data.
 - Supports keyboard course inspection and a responsive layout.
 - Starts with a quiet **Full map** overview on a framed cool-slate canvas. The compact program row leaves room for the graph; Course map, Timeline, and Course list live in the sidebar. Choosing a course opens its compact preview below the map at every width; the toggle returns to the overview.
-- Labels subjects **Foundation, Core, Advanced, or Graduate** using documented MIT curriculum groups and published subject levels, with **Undergraduate** as the fallback. Foundation and Core are CourseGraph's short names for those groups; roles can vary by program and are not difficulty scores or class years. Real prerequisites take precedence when ordering the map. The small **Course numbers & labels** guide below the legend explains the labels and MIT numbering; see [curriculum-role sources](docs/CURRICULUM-ROLES.md).
+- Labels subjects **Foundation, Core, Advanced, or Graduate** using documented MIT curriculum groups and published subject levels, with **Undergraduate** as the fallback. Foundation and Core are CourseGraph's short names for those groups; roles can vary by program and are not difficulty scores or class years. Real prerequisites take precedence when ordering the map. The small **Course numbers & labels** guide beside the legend in a light-grey row explains the labels and MIT numbering; see [curriculum-role sources](docs/CURRICULUM-ROLES.md).
 - Uses consistent 4:3 rectangular cards with bold, full-width titles and no subject icons. Foundation cards are white, Core blue, Advanced purple, and Graduate dark grey, with a neutral Undergraduate fallback. Saved choices retain their level color and a pastel-green checked circle. Selecting a locked course turns its card yellow and emphasizes the lock while opening its requirements. Prerequisite, onward, and missing connections retain their own colors.
 - Shows the program goal as a large original enamel crest, combining a beacon, circuits, an open book, and laurel in cardinal, ivory, and bronze. Its **Mapped coursework** progress bar sits underneath. Solid fill represents completed coverage; the lighter reach includes valid planned coursework. Even 100% covers only the modeled requirements. A separate explicit advisor-review record adds the milestone check; it is your record of major fulfillment, not institutional verification. Further study still requires separate advising and admissions review.
 - Offers program-related talks and short lectures linked from MIT sources through **Explore the field**. These connections are editorial suggestions, not official program recommendations; see [inspiration sources](docs/INSPIRATION.md).
 
-Forthcoming refreshed screenshots: [Prerequisites and onward possibilities](docs/media/prerequisites.jpg) · [Semester planning and workload](docs/media/timeline.jpg).
+The remaining screenshot and film deliverables are tracked in the [media TODO](docs/TODO.md#media--deferred-at-stephens-request).
 
 ## Run locally
 
@@ -50,7 +50,7 @@ Use **Node.js 24** and npm; Node.js 22 or newer is supported. No database, API k
 ```sh
 git clone https://github.com/Stephenitis/CourseGraph.git
 cd CourseGraph
-git checkout prototype/coursegraph
+git checkout master
 cd web
 npm ci
 npm run dev
@@ -107,9 +107,9 @@ Remaining-semester comparisons require a user-entered, advisor-confirmed unit ba
 
 ## Screenshots and films
 
-The forthcoming 52-second school explainer and 10.8-second demo loop will be captioned motion presentations edited from actual prototype screenshots. They will not imply continuous mouse interaction. The README GIF will play without sound; the MP4 will retain higher resolution. Final capture, rendering, and media-link verification are still pending.
+Media work is paused until Stephen asks to resume. The planned 52-second school explainer and 10.8-second demo loop will be captioned motion presentations edited from actual prototype screenshots. They will not imply continuous mouse interaction. The README GIF will play without sound; the MP4 will retain higher resolution. Final capture, rendering, and media-link verification are still pending.
 
-See the [storyboard and capture instructions](docs/media/STORYBOARD.md). To regenerate the films after updating the screenshots:
+See the [storyboard and capture instructions](docs/media/STORYBOARD.md). When media work resumes, capture a consistent approved build before running the prepared renderer:
 
 ```sh
 # Requires Python, Pillow, FFmpeg, and Avenir/Arial or DejaVu Sans fonts

@@ -165,11 +165,12 @@ def make_scenes(assets: dict[str, Path]):
         "paths": ("Compare possible futures.", "Keep several named paths in this browser. Export a backup to take them with you.", VIOLET),
         "timeline": ("Bring possibilities into a semester plan.", "Plan course order. Meeting-time conflicts remain unknown without section data.", CYAN),
     }
-    # Include all real states that exist, with timing normalized into the requested length.
+    # Give warnings and their repair time to read; normalize if a capture is absent.
     keys = [key for key in STATES if key in assets]
-    seconds = (52 - 5 - 6) / len(keys)
+    weights = {"overview": 5.5, "prerequisites": 7, "missing": 7, "resolved": 7.5, "paths": 7, "timeline": 7}
+    scale = 41 / sum(weights[key] for key in keys)
     explainer = [Scene("intro", "A clearer way to see your future.", "Make course relationships visible. Help students explore their next possibility.", 5)]
-    explainer += [Scene("screen", *descriptions[key][:2], seconds, key, descriptions[key][2]) for key in keys]
+    explainer += [Scene("screen", *descriptions[key][:2], weights[key] * scale, key, descriptions[key][2]) for key in keys]
     explainer += [Scene("outro", "Keep more than one future.", "An academic path explorer for students and the schools that guide them.", 6)]
     # A verified repair screenshot strengthens cause-and-effect; without one, never fake it.
     loop_keys = [key for key in ("prerequisites", "missing", "resolved", "paths") if key in assets]
