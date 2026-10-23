@@ -1,21 +1,21 @@
 # CourseGraph handoff — October 23, 2026
 
+## Restoration
+
+At Stephen’s request, the app and documentation were restored to the original `ea8a5aa` handoff snapshot. Later geometric-routing and `/idea2` experiments remain recoverable in Git history but are no longer part of the running app. Browser storage and saved plans were not cleared or migrated.
+
 ## Start here
 
 CourseGraph is Stephen Nguyen's visual academic-path prototype, inspired by Diablo II skill trees. Students explore prerequisites and onward possibilities, keep alternative named plans, and place choices in semesters. The experience should feel like a thoughtful university tool: modern, personal, playful through interaction, and free of marketing copy in the working interface.
 
 - **Live:** [coursegraph.my](https://coursegraph.my/)
 - **Repository:** [Stephenitis/CourseGraph, master](https://github.com/Stephenitis/CourseGraph/tree/master)
-- **App release:** [PR #5](https://github.com/Stephenitis/CourseGraph/pull/5), merged to master as `7d85932`. App source head was `b9d28ade0ca682b7d95f8ea4a5fbf93334869b67`.
+- **App release:** [PR #1](https://github.com/Stephenitis/CourseGraph/pull/1), merged to master as `2babc38e75bd14932524b4de9170f337e4569078`. App source head was `fda36cd5e77a547934e3e6243ef214627d1ed4e8`.
 - **Runnable source:** `web/`. The original Rails app remains for history and is not required.
 - **Local checkout:** `/Users/eeveehome/Documents/ChatGPT/CourseGraph`.
 - **Next work:** [TODO.md](TODO.md). Media production is explicitly deferred at Stephen's request.
 
 Stephen authorized **test → build → push → merge to master → deploy** as the default future release workflow. This is an instruction for the agent, not an installed automatic GitHub deployment pipeline. No additional account is needed to keep the current prototype running.
-
-## Experimental view
-
-`/idea2` is a separate course-unlock prototype with prerequisite-depth columns, gold prerequisite-option highlights, and a collapsible modeled-requirements slot board. Selections are transient and do not alter saved paths. See [IDEA2.md](IDEA2.md) for scope, feedback questions, and smoke checks. The graph release identifiers below describe the preceding original-map release.
 
 ## What works
 
@@ -23,7 +23,7 @@ The React 19 / TypeScript / Vite app uses React Flow with custom layout, routing
 
 Requirement evaluation handles nested AND/OR, course counts, unit counts, earlier-term prerequisites, same-term corequisites and manual review. A downstream highlight means a contribution toward a requirement, not guaranteed eligibility. Semester planning includes loads and optional capacity comparisons based on an advisor-confirmed remaining-unit balance.
 
-Clicking a graph card inspects and focuses it without changing the plan. Its check button adds an available course to the active plan and term, or removes a planned course. If removal would invalidate previously supported planned courses, a confirmation lists the affected courses and terms. Valid alternatives are preserved, existing invalid courses are not swept into the cascade, completed history stays intact, and Undo restores the action. Locked cards inspect requirements without adding. Course-list and timeline entries inspect without toggling.
+Clicking an available graph card adds it to the active plan and term. Clicking a planned card or its checked circle removes it. If removal would invalidate previously supported planned courses, a confirmation lists the affected courses and terms. Valid alternatives are preserved, existing invalid courses are not swept into the cascade, completed history stays intact, and Undo restores the action. Locked cards inspect requirements without adding. Course-list and timeline entries inspect without toggling.
 
 Several named paths can be renamed, duplicated, exported, imported and shared. Completed history is shared across the user's alternatives. Share produces a URL-fragment snapshot with a recipient preview and explicit import into a new path; it does not transfer the sender's earned-credit status, advisor review, profile or pacing settings.
 
@@ -31,13 +31,12 @@ The degree crest shows completed and valid-planned coverage of modeled coursewor
 
 ## Current design decisions
 
-- Left-to-right progression, a wide course field of at least 2.6:1, deterministic symmetric lattice spacing and invisible routing waypoints. Card positions and route geometry stay fixed during inspection. Grey catalog pipes stay visible; supported chosen links remain teal, available options are dotted violet, and inspected unmet options use red dashes. See [GRAPH-DESIGN.md](GRAPH-DESIGN.md) for the layout/routing research and rules.
+- Left-to-right progression, roughly 1.95:1 overall shape, deterministic organic spacing. Selection gently opens nearby spacing while unrelated routes fade. Connections use cyan prerequisites, violet onward possibilities, amber needed courses and red missing links.
 - Fixed **336×252, 4:3** course cards. No subject icons. Full-width bold titles use 28/25/23 px before map scaling, according to title length. Foundation is white, Core blue, Advanced purple and Graduate charcoal, with a neutral Undergraduate fallback. These are sourced curriculum roles, not universal difficulty scores.
 - Depth increases by stage on the right and bottom. Saved choices retain their curriculum color and have pastel-green checks. Available buttons have light-grey fill and a subtle green glow. A focused locked card turns yellow and prominently emphasizes its lock.
-- First load shows a labeled full-major visual demo without modifying saved assignments or completion history. Click a course or Show my path to return to the real plan. Incoming routes merge before busy cards; long free spans use alternating geometric steps, with obstacle-safe exceptions.
-- First load and **Full map** fit all courses, the goal, and routed connections. Blank-canvas clicks use **0.4** zoom until a course is inspected or another camera command is used. **Select window** replaces Focus: fit all, drag a rectangle, then zoom into it; Escape cancels. Reset retains **0.575**. Node inspection prefers **0.85** while keeping the selected card visible.
+- Default and Reset view zoom is **0.575**. Focus targets the latest inspected course or an available option at a closer scale (preferred 0.95 where space allows). Pan and zoom-out bounds keep the graph reachable.
 - Minimap is **off by default**, square-cornered, subtly bordered, and positioned near the upper-right map controls. The legend has a light-grey background; its 12 px labels and the arrow-marked Course numbers & labels helper share a row.
-- Square, restrained map header: placeholder portrait, **Stephen’s**, then **Systems Engineer Overload aka Future AI CTO**. The editable build name is the visual priority. **Full map**, Select window, Reset view and Minimap controls live here.
+- Square, restrained map header: placeholder portrait, **Stephen’s**, then **Systems Engineer Overload aka Future AI CTO**. The editable build name is the visual priority. **Full map**, Focus, Reset view and Minimap controls live here.
 - Course map / Timeline / Course list navigation lives in the sidebar. The sidebar collapses smoothly to an icon rail, with Create path, Export, Import and Share. Preview stays **below the map at every width**.
 - Search, Autofill, the top Program goal shortcut and top-bar About button are removed. Dormant autofill code and `SubjectIcon.tsx` remain; do not restore them to the UI without a new request.
 - MIT is the default appearance. Plain, Dark, NYU, Stanford and Virginia Tech only change styling; all use MIT data and preserve graph semantics. Disclaimers remain small in the footer, with detailed scope accessible separately.
@@ -49,10 +48,6 @@ There is **no authentication, Supabase database or cloud synchronization**. The 
 Paths use versioned localStorage: `coursegraph.paths.v1`, with prior-version recovery in `coursegraph.paths.backup.v1`. Import/export validates versioned JSON. Preserve invalid-data recovery copies and user plans when debugging.
 
 Storage is origin-specific: `localhost`, `127.0.0.1`, different ports and `coursegraph.my` each have separate saved plans. Use **Export → Import** to move decisions; do not clear storage or assume a missing plan was deleted. Export is the current backup method. Shared links expose the encoded plan to anyone who receives the link; they are snapshots, not synchronized collaboration.
-
-## Current graph release verification
-
-The continuous-constellation change uses 35 focused layout/routing/appearance/camera checks. Stephen requested skipping unrelated slow checks and reusing built output for deployment. The importer is unchanged; its tests were not rerun. Full regression commands below remain available when their scope is relevant. Persistence was reconsidered and explicitly deferred again: this remains a demo prototype.
 
 ## Run and verify
 
@@ -71,13 +66,13 @@ npm --prefix web run preview -- --port 4173 --strictPort
 
 Use Node 24; Node 22+ is supported. On this Mac the bundled Node directory is `/Users/eeveehome/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin`; prepend it to PATH if the shell runtime is absent or older. Development normally uses port 5173. Preview serves `web/dist` and requires a new build after edits. Ports 4174/4175 were temporary review servers; check listeners instead of assuming they remain active. Prefer one stable localhost origin to keep saved plans consistent.
 
-Original release verification: **135 TypeScript tests and 5 Python importer tests passed**. The six camera tests also passed after the final zoom change. Production compilation passed after the final header/legend changes. Browser inspection verified 39 CS cards at 4:3, title clearance, removed icons and curriculum colors. This was not an exhaustive final mobile, dark-mode, reduced-motion or screen-reader audit, and no real teenage user study occurred.
+Release verification: **135 TypeScript tests and 5 Python importer tests passed**. The six camera tests also passed after the final zoom change. Production compilation passed after the final header/legend changes. Browser inspection verified 39 CS cards at 4:3, title clearance, removed icons and curriculum colors. This was not an exhaustive final mobile, dark-mode, reduced-motion or screen-reader audit, and no real teenage user study occurred.
 
 ## Deployment and GitHub
 
 Production is an existing public **Sites** project, `appgprj_6adb849892d08191bf9dc2fcfb1fa83d`. Its config is `web/.openai/hosting.json`; output is `web/dist`. The secondary address is [coursegraph-paths.rlze.chatgpt.site](https://coursegraph-paths.rlze.chatgpt.site). Namecheap DNS and TLS are active. Vercel is compatible but not the current host; no Vercel project was created by this chat.
 
-Latest publication: Sites version **4**, source commit `3f10b1f76ea3133e88a5bbda67e5148785f65d5f`, version ID `appgprj_6adb849892d08191bf9dc2fcfb1fa83d~appgver_b3eff196c8e4819189227156d68f0cee`, deployment `appgdep_6adbc45515c88191a6ed1ace22d33084`. It succeeded October 23, 2026 at 20:32:28 UTC. The custom-domain HTML was verified to load `index-DK-S8VrF.js` and `index-BzJ0wVyw.css`, matching the latest build.
+Latest publication: Sites version **2**, source commit `a549d4a8312aa78b9d9aa2352ac740476cbb1a9e`, version ID `appgprj_6adb849892d08191bf9dc2fcfb1fa83d~appgver_f135bd9700a8819184cca78fafb2b111`, deployment `appgdep_6adbb5c0e848819191ecb944b756a94d`. It succeeded October 23, 2026 at 19:30:21 UTC. The custom-domain HTML was verified to load `index-CNf6gpzX.js` and `index-5UVpx71W.css`, matching the latest build.
 
 For a future app release, read the installed Sites skill and use the existing project and public audience. Build `web/`, synchronize it into the ignored `.site-stage/` checkout (exclude `.git`, `node_modules`, `.env*` and build metadata), then use the Sites source-package helper, save a version, deploy that exact version and verify the public asset references. Pass fresh short-lived credentials through hidden stdin only. See [DEPLOYMENT.md](DEPLOYMENT.md). GitHub merge alone does **not** deploy Sites.
 

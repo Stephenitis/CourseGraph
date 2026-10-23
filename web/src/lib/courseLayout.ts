@@ -30,59 +30,6 @@ function overviewBoundsFor(bounds:CourseLayout['bounds']):CourseLayout['bounds']
   return {left,right,top,bottom,width:right-left,height:bottom-top};
 }
 
-/** Sugiyama-style alternating barycenter sweeps, including virtual nodes on long links.
- * Keep the best crossing count: no sweep may degrade the final ordering.
- * Virtual nodes influence ordering only; they never become courses or requirements.
- */
-export function orderCourseLayers(ids:string[],ranks:Map<string,number>,links:LayoutLink[]):Map<number,string[]> {
-  const layers=new Map<number,string[]>();
-  for(const id of [...ids].sort(byId)){const rank=ranks.get(id)!;layers.set(rank,[...(layers.get(rank)??[]),id]);}
-  const segments:LayoutLink[]=[];
-  for(const link of links){
-    const first=ranks.get(link.source)!,last=ranks.get(link.target)!;
-    if(last<=first)continue;
-    let previous=link.source;
-    for(let rank=first+1;rank<last;rank++){
-      const id=`@route:${link.source}:${link.target}:${rank}`;
-      layers.set(rank,[...(layers.get(rank)??[]),id]);segments.push({source:previous,target:id});previous=id;
-    }
-    segments.push({source:previous,target:link.target});
-  }
-  const rankList=[...layers.keys()].sort((a,b)=>a-b);
-  const before=new Map<string,string[]>(),after=new Map<string,string[]>();
-  for(const {source,target} of segments){before.set(target,[...(before.get(target)??[]),source]);after.set(source,[...(after.get(source)??[]),target]);}
-  const score=()=>{
-    const positions=new Map([...layers.values()].flatMap(row=>row.map((id,i)=>[id,i] as const)));
-    let crossings=0,travel=0;
-    for(const rank of rankList){
-      const row=new Set(layers.get(rank)!);
-      const edges=segments.filter(e=>row.has(e.source));
-      for(let i=0;i<edges.length;i++){
-        const a=edges[i];travel+=Math.abs(positions.get(a.source)!-positions.get(a.target)!);
-        for(let j=i+1;j<edges.length;j++){
-          const b=edges[j];
-          if((positions.get(a.source)!-positions.get(b.source)!)*(positions.get(a.target)!-positions.get(b.target)!)<0)crossings++;
-        }
-      }
-    }
-    return {crossings,travel};
-  };
-  let best=new Map([...layers].map(([rank,row])=>[rank,[...row]])),bestScore=score();
-  for(let pass=0;pass<12;pass++){
-    const forward=pass%2===0,neighbors=forward?before:after;
-    for(const rank of forward?rankList:[...rankList].reverse()){
-      const positions=new Map([...layers.values()].flatMap(row=>row.map((id,i)=>[id,(i+.5)/row.length] as const)));
-      const row=layers.get(rank)!;
-      const barycenter=(id:string)=>{const adjacent=neighbors.get(id)??[];return adjacent.length?adjacent.reduce((sum,n)=>sum+positions.get(n)!,0)/adjacent.length:positions.get(id)!;};
-      row.sort((a,b)=>barycenter(a)-barycenter(b)||positions.get(a)!-positions.get(b)!||byId(a,b));
-    }
-    const candidate=score();
-    if(candidate.crossings<bestScore.crossings||candidate.crossings===bestScore.crossings&&candidate.travel<bestScore.travel){bestScore=candidate;best=new Map([...layers].map(([rank,row])=>[rank,[...row]]));}
-  }
-  const real=new Set(ids);
-  return new Map([...best].map(([rank,row])=>[rank,row.filter(id=>real.has(id))]));
-}
-
 export function layoutCourses(input:LayoutCourse[],inputLinks:LayoutLink[],columnLimit:number):CourseLayout {
   const nodes=new Map<string,LayoutCourse>();
   for(const course of input){
@@ -134,7 +81,6 @@ export function layoutCourses(input:LayoutCourse[],inputLinks:LayoutLink[],colum
   }
   const ranks=new Map(ids.map(id=>{const component=componentOf.get(id)!;return [id,roleOffsets.get(role(component))!+localRank(component)];}));
   const rankNumbers=[...new Set(ranks.values())].sort((a,b)=>b-a);
-  const orderedLayers=orderCourseLayers(ids,ranks,links);
   const columns=Number.isFinite(columnLimit)?Math.min(16,Math.max(1,Math.floor(columnLimit))):4;
   const slotWidth=nodes.size?Math.max(...[...nodes.values()].map(node=>node.width)):244;
   const maximumColumns=Math.min(columns,Math.max(1,...rankNumbers.map(value=>ids.filter(id=>ranks.get(id)===value).length)));
@@ -142,7 +88,13 @@ export function layoutCourses(input:LayoutCourse[],inputLinks:LayoutLink[],colum
   const positions=new Map<string,LayoutPoint>(),bands:LayoutBand[]=[];
   let y=0;
   for(const value of rankNumbers){
-    const members=orderedLayers.get(value)!;
+    const members=ids.filter(id=>ranks.get(id)===value);
+    // Align neighboring branches where possible; IDs settle all ties so input/selection order never matters.
+    const anchor=(id:string)=>{
+      const targets=outgoing.get(id)!.filter(target=>positions.has(target));
+      return targets.length?targets.reduce((sum,target)=>sum+positions.get(target)!.x+nodes.get(target)!.width/2,0)/targets.length:maximumWidth/2;
+    };
+    members.sort((a,b)=>anchor(a)-anchor(b)||byId(a,b));
     const top=y;
     for(let start=0;start<members.length;start+=columns){
       const row=members.slice(start,start+columns),height=Math.max(...row.map(id=>nodes.get(id)!.height));
@@ -165,7 +117,7 @@ export interface BalancedCourseLayout extends CourseLayout {
 }
 export const ORGANIC_HORIZONTAL_GAP=40;
 export const ORGANIC_VERTICAL_GAP=36;
-const ORGANIC_ROW_SPACE=88;
+const ORGANIC_ROW_SPACE=68;
 const ORGANIC_Y_SLACK=60;
 const ORGANIC_X_SLACK=180;
 const ORGANIC_BOUNDARY_SLACK=84;
@@ -290,35 +242,4 @@ export function openCourseNeighborhood(layout:BalancedCourseLayout,input:LayoutC
   const bottom=Math.max(...[...positions].map(([id,p])=>p.y+sizes.get(id)!.height));
   const bounds={left,right,top,bottom,width:right-left,height:bottom-top};
   return {...layout,positions,bounds};
-}
-
-/** A directional lattice: dependency ranks are hard columns; sparse columns retain
- * empty space for routing. Symmetric vertical slots and repeated angles provide
- * rhythm without inventing courses, prerequisites, or shared junctions.
- */
-export function layoutGeometricCourses(input:LayoutCourse[],links:LayoutLink[]):BalancedCourseLayout {
-  const ranked=layoutCourses(input,links,16);
-  if(!ranked.positions.size)return layoutBalancedCourses(input,links);
-  const sizes=new Map(input.map(n=>[n.id,{width:dimension(n.width,244),height:dimension(n.height,160)}]));
-  const width=Math.max(...[...sizes.values()].map(n=>n.width)),height=Math.max(...[...sizes.values()].map(n=>n.height));
-  const layers=orderCourseLayers([...ranked.positions.keys()],ranked.ranks,ranked.links);
-  const ranks=[...layers.keys()].filter(r=>layers.get(r)!.length).sort((a,b)=>a-b);
-  const widest=Math.max(...[...layers.values()].map(row=>row.length));
-  const pitchY=height+180;
-  const mapHeight=(widest-1)*pitchY+height;
-  // Widen the board when a major has many parallel courses. Never compress cards.
-  const pitchX=Math.max(width+460,(mapHeight*2.6-width)/Math.max(1,ranks.length-1));
-  const positions=new Map<string,LayoutPoint>();
-  for(const [column,rank] of ranks.entries()){
-    const row=layers.get(rank)!;
-    row.forEach((id,index)=>{
-      const size=sizes.get(id)!;
-      positions.set(id,{x:Number((column*pitchX+(width-size.width)/2).toFixed(3)),y:Number(((widest-row.length)*pitchY/2+index*pitchY+(height-size.height)/2).toFixed(3))});
-    });
-  }
-  const right=Math.max(...[...positions].map(([id,p])=>p.x+sizes.get(id)!.width));
-  const bottom=Math.max(...[...positions].map(([id,p])=>p.y+sizes.get(id)!.height));
-  const bounds={left:0,right,top:0,bottom,width:right,height:bottom},overviewBounds=overviewBoundsFor(bounds);
-  const bands=ranked.bands.map(b=>({...b,top:Math.min(...b.courseIds.map(id=>positions.get(id)!.y)),bottom:Math.max(...b.courseIds.map(id=>positions.get(id)!.y+sizes.get(id)!.height)),rows:b.courseIds.length}));
-  return {...ranked,positions,bands,bounds,overviewBounds,columns:ranks.length,aspectRatio:overviewBounds.width/overviewBounds.height};
 }
