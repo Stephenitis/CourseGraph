@@ -1,0 +1,5 @@
+.map-only-toggle{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:34px;padding:7px 11px;border:1px solid var(--line);border-radius:7px;font-size:11px;white-space:nowrap;background:var(--surface);color:var(--ink)}
+.map-only-toggle[aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.app-shell.map-only .react-flow__edge.edge-neutral .react-flow__edge-path{stroke:color-mix(in srgb,var(--ink) 20%,var(--canvas))!important}
+.app-shell.map-only .inspector,.app-shell.map-only .semester-tray,.app-shell.map-only .program-intro,.app-shell.map-only .path-header-actions,.app-shell.map-only .map-guidance,.app-shell.map-only .map-legend,.app-shell.map-only .appearance-caption{display:none}
+.app-shell.map-only .exploration-area{padding-bottom:14px}

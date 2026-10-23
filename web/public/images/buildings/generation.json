@@ -1,0 +1,20 @@
+{
+  "tool": "Built-in image_gen",
+  "style": "Loose graphite architectural sketches with soft watercolor washes, muted sage, dusty blue, warm ivory and pale ochre, transparent backgrounds.",
+  "assets": [
+    {
+      "file": "stata-sketch.png",
+      "reference": "https://commons.wikimedia.org/wiki/File:Stata_Center.JPG",
+      "referenceAuthor": "Millylang",
+      "referenceLicense": "Public domain",
+      "prompt": "Create a standalone architectural vignette for the CourseGraph interface. Image 1 is architectural subject reference: MIT Stata Center, its playful angular brick volumes and irregular windows. Image 2 is STYLE reference only: match the delicate hand-drawn building illustration at the lower left, graphite contours, unfinished architectural pencil lines, soft watercolor washes. Do not reproduce the interface or any typography. Reinterpret Stata Center as a lovely loose abstract architectural sketch with recognizable angular volumes, a calmer more level three-quarter composition rather than overwhelming tilted sky. Muted sage green, dusty blue, warm limestone, very subdued terracotta and pale ochre; airy, gentle, pleasantly colored, not monochrome. Sparse trees and ground pencil strokes, minimal detail. Wide landscape vignette with softly disappearing edges, genuine transparent background outside the drawing; no opaque paper rectangle, no sky rectangle, no text, no border. Art will be shown about 240 px wide; strong recognizable silhouette but light delicate linework. Artistic interpretation rather than accurate wayfinding drawing."
+    },
+    {
+      "file": "simons-sketch.png",
+      "reference": "https://commons.wikimedia.org/wiki/File:MIT_-_Department_of_Mathematics_(54960639561).jpg",
+      "referenceAuthor": "Ajay Suresh",
+      "referenceLicense": "https://creativecommons.org/licenses/by/4.0/",
+      "prompt": "Create a standalone architectural vignette for CourseGraph. Image 1 is building reference: MIT Simons Building mathematics department, the elegant limestone courtyard, classical tall windows and pilasters with green lawn and a few trees. Preserve its recognizable architecture. Image 2 is STYLE reference only: match the airy abstract architectural sketch at bottom left, delicate graphite lines with unfinished construction strokes, soft pale watercolor washes. Do not reproduce the interface, dome or any lettering. Muted pleasant sage green, dusty blue shadows, warm ivory limestone and subtle pale ochre foliage. Wide landscape vignette, calm academic atmosphere, loose sketchbook aesthetic, gentle impressionistic foliage, no photographic textures. Simplify distracting foreground pole and bicycles. Genuine transparent background outside illustration, no opaque paper or sky rectangle, irregular feathered edges. No text, labels, border or frame. Designed for 240px-wide decorative map accent; recognizable silhouette, light linework. Artistic interpretation rather than wayfinding drawing."
+    }
+  ]
+}
