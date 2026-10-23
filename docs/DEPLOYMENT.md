@@ -29,12 +29,13 @@ For a Vercel project, use repository `Stephenitis/CourseGraph`, branch `master`,
 
 ## Latest release and future workflow
 
-The latest app was merged through [PR #1](https://github.com/Stephenitis/CourseGraph/pull/1) into `master` at `2babc38e75bd14932524b4de9170f337e4569078` (app source head `fda36cd5e77a547934e3e6243ef214627d1ed4e8`). Sites version **2** deployed successfully on October 23, 2026 at 19:30:21 UTC:
+The latest app was merged through [PR #3](https://github.com/Stephenitis/CourseGraph/pull/3) into master at `709ebf0` (app source head `f6a697dea0fbac17e13bb20b5f55aead2286032a`). Sites version **3** deployed successfully on October 23, 2026 at 20:23:26 UTC:
 
-- Source commit: `a549d4a8312aa78b9d9aa2352ac740476cbb1a9e`
-- Version: `appgprj_6adb849892d08191bf9dc2fcfb1fa83d~appgver_f135bd9700a8819184cca78fafb2b111`
-- Deployment: `appgdep_6adbb5c0e848819191ecb944b756a94d`
-- Verified public entry assets: `index-CNf6gpzX.js` and `index-5UVpx71W.css`
+- Source commit: `b20fc32d96e2afd0502015a3f6050449b6f5bc37`
+- Version: `appgprj_6adb849892d08191bf9dc2fcfb1fa83d~appgver_f608573b1be4819197b737be7d4c18fc`
+- Deployment: `appgdep_6adbc235fd58819193efca6648d27da6`
+- Verified public entry assets: `index-plE_p7h3.js` and `index-BzJ0wVyw.css`
+- Checks: 32 focused layout/routing/appearance/camera tests; production TypeScript/Vite build. Final bundling took 1.68 seconds; Sites reused that output.
 
 Stephen’s standing instruction is **test → build → push → merge to master → deploy**. GitHub and Sites remain separate steps; no automatic GitHub-to-Sites deployment pipeline is installed. Documentation-only updates do not require an unchanged app deployment. Use [HANDOFF.md](HANDOFF.md) and the installed Sites skill for the release process, and preserve the current public audience and project.
 
