@@ -30,6 +30,7 @@ The degree crest shows completed and valid-planned coverage of modeled coursewor
 - Left-to-right progression, a wide course field of at least 2.6:1, deterministic symmetric lattice spacing and invisible routing waypoints. Card positions and route geometry stay fixed during inspection. Grey catalog pipes stay visible; supported chosen links remain teal, available options are dotted violet, and inspected unmet options use red dashes. See [GRAPH-DESIGN.md](GRAPH-DESIGN.md) for the layout/routing research and rules.
 - Fixed **336×252, 4:3** course cards. No subject icons. Full-width bold titles use 28/25/23 px before map scaling, according to title length. Foundation is white, Core blue, Advanced purple and Graduate charcoal, with a neutral Undergraduate fallback. These are sourced curriculum roles, not universal difficulty scores.
 - Depth increases by stage on the right and bottom. Saved choices retain their curriculum color and have pastel-green checks. Available buttons have light-grey fill and a subtle green glow. A focused locked card turns yellow and prominently emphasizes its lock.
+- First load shows a labeled full-major visual demo without modifying saved assignments or completion history. Click a course or Show my path to return to the real plan. Incoming routes merge before busy cards; long free spans use alternating geometric steps, with obstacle-safe exceptions.
 - First load and **Full map** fit all courses, the goal, and routed connections. Blank-canvas clicks use **0.4** zoom until a course is inspected or another camera command is used. **Select window** replaces Focus: fit all, drag a rectangle, then zoom into it; Escape cancels. Reset retains **0.575**. Node inspection prefers **0.85** while keeping the selected card visible.
 - Minimap is **off by default**, square-cornered, subtly bordered, and positioned near the upper-right map controls. The legend has a light-grey background; its 12 px labels and the arrow-marked Course numbers & labels helper share a row.
 - Square, restrained map header: placeholder portrait, **Stephen’s**, then **Systems Engineer Overload aka Future AI CTO**. The editable build name is the visual priority. **Full map**, Select window, Reset view and Minimap controls live here.
@@ -47,7 +48,7 @@ Storage is origin-specific: `localhost`, `127.0.0.1`, different ports and `cours
 
 ## Current graph release verification
 
-The continuous-constellation change uses 32 focused layout/routing/appearance/camera checks. Stephen requested skipping unrelated slow checks and reusing built output for deployment. The importer is unchanged; its tests were not rerun. Full regression commands below remain available when their scope is relevant. Persistence was reconsidered and explicitly deferred again: this remains a demo prototype.
+The continuous-constellation change uses 35 focused layout/routing/appearance/camera checks. Stephen requested skipping unrelated slow checks and reusing built output for deployment. The importer is unchanged; its tests were not rerun. Full regression commands below remain available when their scope is relevant. Persistence was reconsidered and explicitly deferred again: this remains a demo prototype.
 
 ## Run and verify
 

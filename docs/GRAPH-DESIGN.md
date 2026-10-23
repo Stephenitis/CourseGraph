@@ -16,8 +16,9 @@ The map is a visible network before inspection, with a persistent saved route an
 2. Insert temporary virtual vertices for long connections. Run 12 alternating normalized-barycenter sweeps. Retain the best ordering lexicographically by crossing count, then travel. Virtual vertices are never displayed as courses or requirements.
 3. Place fixed 4:3 cards in hard left-to-right dependency columns. Center each column symmetrically on a shared vertical lattice with 180px card clearance. Size horizontal pitch from the widest layer, aiming for at least a 2.6:1 course field. Sparse columns retain open routing space. Inspection does not move the cards.
 4. Assign source and destination lanes consistently. Prefer horizontal runs with repeated 30/60-degree diagonals, including paired diagonal runs through invisible routing waypoints. Choose the shortest clear candidate within bounded outer rails. Where these motifs are blocked, use local corridors or a Euclidean visibility graph around padded card corners, with distance plus a bend penalty. Retain the orthogonal obstacle router as a fallback. Waypoints never alter requirement semantics.
-5. Prove quadratic bends clear by recursive subdivision; shrink unsafe bends. Route all states with the same geometry. Memoize curves across viewport updates.
-6. Include actual route points and the degree goal in overview bounds. Screen-compensated stroke widths keep pipes visible at overview scale.
+5. Merge eligible incoming connections into an identical 180px-or-shorter entry trunk before the destination. Bundles retain separate edge identities and do not imply AND/OR semantics. Subdivide long free spans into alternating triangular steps (nominal 560px pitch), trying smaller offsets near obstacles. Short entry trunks remain straight; when no safe stepped detour exists, retain the obstacle-safe original segment.
+6. Prove quadratic bends clear by recursive subdivision; shrink unsafe bends. Route all states with the same geometry. Memoize curves across viewport updates.
+7. Include actual route points and the degree goal in overview bounds. Screen-compensated stroke widths keep pipes visible at overview scale.
 
 ## Visual semantics
 
@@ -29,7 +30,7 @@ The map is a visible network before inspection, with a persistent saved route an
 
 ## Navigation and first load
 
-First load fits the complete graph. Newly initialized demos have a partially filled computing/math route with programming preparation and later courses placed in successive semesters. Existing saved plans are never replaced.
+First load fits the complete graph and lights every course and edge in an explicitly labeled full-major demo preview. The preview is transient; clicking a course or Show my path returns to the actual saved plan without modifying history, assignments, or degree progress. Newly initialized demos have a partially filled computing/math route with programming preparation and later courses placed in successive semesters. Existing saved plans are never replaced.
 
 Full map always fits every card and connection, and stays in that camera mode until another explicit action. Clicking blank space switches to 0.4 browsing zoom. Clicking a course inspects and focuses it without changing the plan. The check button adds/removes courses with existing dependency confirmation and Undo.
 
@@ -37,6 +38,6 @@ Select window replaces Focus. It fits the graph, then provides a pointer/touch r
 
 ## Verification and release speed
 
-Run the changed layout, routing, connection-state, and camera suites (32 focused checks, approximately 1–2 seconds on the development machine). Routing checks cover all four MIT programs and sample the rendered 120px-radius curves against every card. Build once after final changes and reuse that `dist` in Sites packaging; do not rerun a successful unchanged build. No importer/data rules changed, so importer tests were skipped for this release at Stephen's request. The full test command remains available for broader domain changes.
+Run the changed layout, routing, connection-state, and camera suites (35 focused checks, approximately 2 seconds on the development machine). Routing checks cover all four MIT programs and sample the rendered 24px and 120px-radius curves against every card. Build once after final changes and reuse that `dist` in Sites packaging; do not rerun a successful unchanged build. No importer/data rules changed, so importer tests were skipped for this release at Stephen's request. The full test command remains available for broader domain changes.
 
 Browser checks cover whole-map bounds, stable chosen edges during inspection, blank-click zoom, rectangle zoom, and cancellation. Media/video production remains deferred; browser inspection is development QA only.

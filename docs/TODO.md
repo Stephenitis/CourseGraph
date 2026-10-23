@@ -18,7 +18,7 @@ Preparation exists in [STORYBOARD.md](media/STORYBOARD.md) and `scripts/render_d
 
 - [x] Directional geometric lattice and stable layered ordering with virtual long-edge vertices, visible grey pipes, obstacle-aware curves, persistent chosen paths, and dotted available options.
 - [x] Full-map first load, blank-click 0.4 zoom, and drag-to-zoom Select window.
-- [x] Partially filled demo seed for new visitors; preserve all existing local plans.
+- [x] Full-major visual preview on load, with Show my path and course inspection returning to saved choices; preserve all existing local plans.
 
 ## Product work requiring a future scope decision
 
