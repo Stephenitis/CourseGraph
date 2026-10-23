@@ -20,6 +20,11 @@ Preparation exists in [STORYBOARD.md](media/STORYBOARD.md) and `scripts/render_d
 - [x] Full-map first load, blank-click 0.4 zoom, and drag-to-zoom Select window.
 - [x] Full-major visual preview on load, with Show my path and course inspection returning to saved choices; preserve all existing local plans.
 
+## Idea 2 iteration
+
+- [x] Add isolated `/idea2` unlock-board prototype with empty requirement slots.
+- [ ] Gather feedback on course-first versus requirements-first emphasis; see [IDEA2.md](IDEA2.md).
+
 ## Product work requiring a future scope decision
 
 - [ ] Add authenticated accounts and cross-device saving if desired. Supabase was discussed but is not connected. Stephen explicitly deferred persistence again on October 23: keep this a demo prototype. Preserve/export local plans before any migration.

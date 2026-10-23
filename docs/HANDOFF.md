@@ -13,6 +13,10 @@ CourseGraph is Stephen Nguyen's visual academic-path prototype, inspired by Diab
 
 Stephen authorized **test → build → push → merge to master → deploy** as the default future release workflow. This is an instruction for the agent, not an installed automatic GitHub deployment pipeline. No additional account is needed to keep the current prototype running.
 
+## Experimental view
+
+`/idea2` is a separate course-unlock prototype with prerequisite-depth columns, gold prerequisite-option highlights, and a collapsible modeled-requirements slot board. Selections are transient and do not alter saved paths. See [IDEA2.md](IDEA2.md) for scope, feedback questions, and smoke checks. The graph release identifiers below describe the preceding original-map release.
+
 ## What works
 
 The React 19 / TypeScript / Vite app uses React Flow with custom layout, routing and cards. Its checked-in MIT 2026–2027 snapshot contains 81 subjects and four program views: CS 6-3, AI and Decision Making 6-4, mathematics minor, and EECS MEng 6-P. Program maps include the available recursive prerequisite/corequisite network; their base sizes are 39, 56, 24 and 39 courses respectively. Personal choices can add courses.
