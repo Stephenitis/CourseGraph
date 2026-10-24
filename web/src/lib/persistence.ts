@@ -1,3 +1,4 @@
+import { HYPOTHETICAL_OUTCOMES } from '../domain/types';
 import type { Catalog, SavedPath, Theme } from '../domain/types';
 import { isProgramCompletionRecord, reconcileProgramCompletion } from '../domain/programCompletion';
 export interface Store { version: 1; selectedPathId: string; theme: Theme; paths: SavedPath[] }
@@ -26,8 +27,9 @@ export function validateStore(raw: unknown, catalog: Catalog): Store {
       if (!c || !ids.has(c.courseId) || assigned.has(c.courseId) || typeof c.term !== 'string' || !TERMS.includes(c.term) || !['completed','planned'].includes(c.status)) throw new Error('A path has an unknown course, duplicate assignment, term, or status.');
       assigned.add(c.courseId);
     }
+    if(p.hypotheticalOutcomes!==undefined && (!p.hypotheticalOutcomes || typeof p.hypotheticalOutcomes!=='object' || Array.isArray(p.hypotheticalOutcomes) || Object.entries(p.hypotheticalOutcomes).some(([id,value])=>!ids.has(id)||!HYPOTHETICAL_OUTCOMES.includes(value))))throw new Error('Hypothetical outcomes must use known courses and a supported grade or Pass/Fail.');
     const review=p.programCompletion;
-    return {id:p.id, ...(p.remainingUnits!==undefined?{remainingUnits:p.remainingUnits}:{}), ...(p.paceUnits!==undefined?{paceUnits:p.paceUnits}:{}), ...(review?{programCompletion:{kind:review.kind,pathId:review.pathId,programId:review.programId,catalogYear:review.catalogYear,confirmedAt:review.confirmedAt,advisorReviewAcknowledged:review.advisorReviewAcknowledged,completedCourseIds:[...review.completedCourseIds].sort()}}:{}), name:p.name.trim(), programId:p.programId, catalogYear:p.catalogYear, createdAt:p.createdAt, updatedAt:p.updatedAt, courses:p.courses.map(c => ({courseId:c.courseId, term:c.term, status:c.status}))};
+    return {id:p.id, ...(p.hypotheticalOutcomes?{hypotheticalOutcomes:{...p.hypotheticalOutcomes}}:{}), ...(p.remainingUnits!==undefined?{remainingUnits:p.remainingUnits}:{}), ...(p.paceUnits!==undefined?{paceUnits:p.paceUnits}:{}), ...(review?{programCompletion:{kind:review.kind,pathId:review.pathId,programId:review.programId,catalogYear:review.catalogYear,confirmedAt:review.confirmedAt,advisorReviewAcknowledged:review.advisorReviewAcknowledged,completedCourseIds:[...review.completedCourseIds].sort()}}:{}), name:p.name.trim(), programId:p.programId, catalogYear:p.catalogYear, createdAt:p.createdAt, updatedAt:p.updatedAt, courses:p.courses.map(c => ({courseId:c.courseId, term:c.term, status:c.status}))};
   });
   const completed=[...new Map(paths.flatMap(p=>p.courses.filter(c=>c.status==='completed')).map(c=>[c.courseId,c])).values()];
   const syncedPaths=paths.map(p=>reconcileProgramCompletion({...p,courses:[...completed,...p.courses.filter(c=>!completed.some(d=>d.courseId===c.courseId))]},catalog));

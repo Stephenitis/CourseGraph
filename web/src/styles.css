@@ -454,3 +454,33 @@ html,body,#root{height:100%;overflow:clip}
 .route-spark-chosen{stroke:color-mix(in srgb,var(--path-connection) 28%,white);filter:drop-shadow(0 0 5px var(--path-connection))}
 .route-spark-possibility{stroke:color-mix(in srgb,var(--possibility) 35%,white);filter:drop-shadow(0 0 5px var(--possibility))}
 .react-flow .course-node[data-stage].chosen::after{content:'';position:absolute;top:0;left:24px;right:24px;height:2px;background:linear-gradient(90deg,transparent,var(--path-connection),transparent);pointer-events:none}
+/* Semester-by-semester entrance keeps the whole map in place. */
+.react-flow .course-node[data-stage].semester-pending{opacity:.24!important;filter:saturate(.15);box-shadow:none;animation:none}
+.react-flow .course-node[data-stage].semester-arriving{animation:semester-card-ignite .85s cubic-bezier(.16,1,.3,1) both}
+@keyframes semester-card-ignite{0%{opacity:.25;filter:brightness(1.45);box-shadow:0 0 0 1px #72e5c4,0 0 12px #72e5c480}45%{opacity:1;filter:brightness(1.08);box-shadow:0 0 0 12px #72e5c425,0 0 65px #72e5c465}100%{opacity:1;filter:brightness(1)}}
+.react-flow__edge.edge-intro-pending .react-flow__edge-path{stroke:var(--edge-neutral)!important;opacity:.12;stroke-width:1.2}
+.semester-entrance,.semester-replay{position:absolute;top:16px;left:20px;z-index:7;border:1px solid color-mix(in srgb,var(--path-connection) 35%,var(--line));background:color-mix(in srgb,var(--surface) 94%,transparent);color:var(--ink);border-radius:14px;box-shadow:0 8px 32px #142d3120;backdrop-filter:blur(14px)}
+.semester-entrance{padding:15px 18px;min-width:230px;max-width:calc(100% - 40px);display:grid;gap:8px}
+.semester-entrance-kicker{font-size:9px;font-weight:750;letter-spacing:1.6px;color:var(--path-connection)}
+.semester-entrance strong{font-size:20px;animation:skill-focus-arrive .3s ease-out}
+.semester-entrance button{font-size:10px;justify-self:start;color:var(--muted);padding:3px 0}
+.semester-entrance-progress{display:flex;gap:4px}
+.semester-entrance-progress i{height:3px;flex:1;background:var(--line);border-radius:4px;transition:background .3s,box-shadow .3s}
+.semester-entrance-progress i.lit{background:var(--path-connection);box-shadow:0 0 8px color-mix(in srgb,var(--path-connection) 45%,transparent)}
+.semester-replay{display:flex;align-items:center;gap:6px;padding:8px 11px;font-size:10px;opacity:.8}
+.semester-replay:hover{opacity:1}
+@media(prefers-reduced-motion:reduce){.react-flow .course-node[data-stage].semester-arriving,.semester-entrance strong{animation:none}.semester-entrance-progress i{transition:none}}
+.semester-rail{display:flex;align-items:center;gap:14px;flex-shrink:0;padding:9px 16px;background:var(--surface);border:1px solid var(--line);border-top:0;min-width:0}
+.semester-rail-caption{display:grid;gap:3px;min-width:115px;font-size:11px}.semester-rail-caption span{font-size:9px;color:var(--muted)}
+.semester-rail-stops{display:flex;align-items:center;overflow-x:auto;scrollbar-width:thin;min-width:0;flex:1;padding:4px 2px}
+.semester-stop,.semester-degree-goal{position:relative;display:grid;justify-items:center;gap:3px;min-width:115px;padding:3px 8px;font-size:10px;flex-shrink:0}
+.semester-stop:before,.semester-degree-goal:before{content:'';position:absolute;top:9px;left:-50%;right:50%;height:1px;background:var(--line)}
+.semester-stop:first-child:before{display:none}.semester-stop i{width:11px;height:11px;border:2px solid var(--line);border-radius:50%;background:var(--surface);z-index:1}
+.semester-stop.current i{background:var(--path-connection);border-color:var(--path-connection)}
+.semester-stop.highlighted i{border-color:var(--possibility);box-shadow:0 0 0 4px color-mix(in srgb,var(--possibility) 18%,transparent),0 0 14px color-mix(in srgb,var(--possibility) 35%,transparent)}
+.semester-stop.highlighted strong{color:var(--possibility)}.semester-stop small,.semester-degree-goal small{font-size:9px;color:var(--muted)}
+.semester-degree-goal i{font-style:normal;line-height:11px;z-index:1;background:var(--surface)}.semester-clear{font-size:10px;color:var(--muted);flex-shrink:0}
+.react-flow .course-node[data-stage].semester-highlighted{opacity:1!important;border-color:var(--possibility);box-shadow:0 0 0 5px color-mix(in srgb,var(--possibility) 40%,transparent),0 0 45px color-mix(in srgb,var(--possibility) 25%,transparent),0 10px 28px #18322420}
+.course-bottom-meta{display:grid;gap:9px}.course-scenario{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--stage-muted)}.course-scenario select{max-width:96px;font-size:11px;padding:4px;border:1px solid var(--stage-frame);border-radius:5px;background:var(--stage-surface);color:var(--stage-ink)}
+.course-node[data-stage] .course-choice-stack .node-state{white-space:normal;max-width:120px;text-align:center}
+@media(max-width:700px){.semester-rail{padding:8px;gap:7px}.semester-rail-caption{min-width:85px;font-size:10px}.semester-stop{min-width:105px}.semester-clear{max-width:50px}}
