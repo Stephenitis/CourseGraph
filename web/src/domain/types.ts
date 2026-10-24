@@ -71,7 +71,12 @@ export interface ProgramCompletionRecord {
   completedCourseIds: string[];
 }
 
+export const HYPOTHETICAL_OUTCOMES = ['A', 'B', 'C', 'D', 'F', 'Pass', 'Fail'] as const;
+export type HypotheticalOutcome = typeof HYPOTHETICAL_OUTCOMES[number];
+
 export interface SavedPath {
+  /** Private what-if annotations, never earned credit or prerequisite evidence. */
+  hypotheticalOutcomes?: Record<string, HypotheticalOutcome>;
   id: string;
   name: string;
   programId: string;

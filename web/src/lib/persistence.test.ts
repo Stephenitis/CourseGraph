@@ -248,3 +248,22 @@ test('graph uncheck persists only planned removal and leaves shared completed hi
     assert.deepEqual(path.courses.find(course => course.courseId === '6.100A'), { courseId: '6.100A', term: 'Fall 2026', status: 'completed' });
   }
 });
+
+test('hypothetical grades survive reload/export and stay private to each alternative',()=>{
+  const store=fixture();
+  store.paths[0].hypotheticalOutcomes={'6.1010':'Fail'};
+  store.paths.push({...store.paths[0],id:'second-path',hypotheticalOutcomes:{'6.1010':'A'}});
+  assert.equal(saveStore(store,catalog),null);
+  const loaded=loadStore(catalog,fixture()).store;
+  assert.equal(loaded.paths[0].hypotheticalOutcomes?.['6.1010'],'Fail');
+  assert.equal(loaded.paths[1].hypotheticalOutcomes?.['6.1010'],'A');
+  assert.deepEqual(loaded.paths[0].courses,store.paths[0].courses);
+  assert.deepEqual(validateStore(JSON.parse(serializeStore(loaded,catalog)),catalog).paths[0].hypotheticalOutcomes,{'6.1010':'Fail'});
+});
+test('hypothetical grade imports reject invalid values and unknown course keys',()=>{
+  for(const outcomes of [{'6.1010':'Definitely graduated'},{'unknown':'Pass'},['A']]){
+    const store=fixture();
+    Object.assign(store.paths[0],{hypotheticalOutcomes:outcomes});
+    assert.throws(()=>validateStore(store,catalog),/Hypothetical outcomes/);
+  }
+});

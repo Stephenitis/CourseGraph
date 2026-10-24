@@ -12,6 +12,14 @@ Selected, semester-supported connections remain solid green in the overview and 
 
 Saved routes carry staggered traveling light, and direct onward possibilities receive their own light trails over flowing dotted lines. A mint/violet ambient wash, softer rounded cards, colored hover halos, and checkmark arrival effects add depth without moving connection endpoints. Curriculum colors and the 4:3 card geometry remain intact. Reduced-motion preferences disable the new moving effects. Effects use CSS/SVG with no animation dependency. Validation: 15 focused route/selection tests and production build passed.
 
+## Semester journey and hypothetical outcomes
+
+Every assignment already stores `courseId`, `term`, and `status`. The map now reveals completed history, then each planned semester in chronological order on entry/path switch, with card ignition and staged connections. Skip, interaction-to-skip, Replay semesters and reduced-motion support keep the map usable.
+
+A connected semester rail previews matching cards on hover/focus; clicking pins the highlight and changes the target semester for new selections. Open semesters remain available through the prototype planning horizon, ending in an advisor-reviewed degree goal, not a guaranteed graduation date. Cards show their saved semester.
+
+Each path can store optional `hypotheticalOutcomes` keyed by course ID (A/B/C/D/F/Pass/Fail). Card What-if controls edit these private scenario annotations; they never change completion, eligibility or degree coverage. Local reload and Export/Import preserve them, alternatives keep independent values, and share links continue to omit private metadata. Older saves need no migration. Validation: 37 focused persistence, sharing, requirements and semester-order tests passed; browser verified staged arrival, Skip, and semester card highlighting.
+
 ## Start here
 
 CourseGraph is Stephen Nguyen's visual academic-path prototype, inspired by Diablo II skill trees. Students explore prerequisites and onward possibilities, keep alternative named plans, and place choices in semesters. The experience should feel like a thoughtful university tool: modern, personal, playful through interaction, and free of marketing copy in the working interface.
